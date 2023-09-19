@@ -1,0 +1,648 @@
+{% extends "base.html" %} {% block title %}Sample{% endblock %} 
+{% block content %}
+{%with messages = get_flashed_messages()%}
+  {%if messages %}
+    <script type="text/javascript">
+      alert("{{messages[-1]}}");
+    </script>
+  {%endif%}
+{%endwith%}
+<html>
+  <head>
+    <style>
+    </style>
+  </head>
+  <body>
+    <!-- Begin Page Content -->
+    <div class="container-fluid" id="refresh_div">
+      
+      <!-- Page Heading
+      <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
+      </div> -->
+
+      <!-- Content Row -->
+      <div class="row">
+      
+        <!-- 현재 시간 -->
+        <div class="col-xl-2 col-md-6 mb-4" id="current_time">
+          <div class="card border-left-secondary shadow h-100 py-2">
+            <div class="card-body ml-2">
+              <div class="row no-gutters align-items-center" id="index_timestamp">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-gray text-uppercase mb-1">{{time[0]}}</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">{{time[1]}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 실시간 출입 방문자 -->
+        <div class="col-xl-2 col-md-6 mb-4">
+          <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body ml-2">
+              <div class="row no-gutters align-items-center" id="index_visitor">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">실시간 출입 방문객 (1m)</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">{% if visitor_count %}{{ visitor_count[0] }}명{% endif %}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 일간 방문자 -->
+        <div class="col-xl-2 col-md-6 mb-4">
+          <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body ml-2">
+              <div class="row no-gutters align-items-center" id="index_daily_visitor">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">일간 방문자 (Daily/1m)</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">{% if visitor_count %}{{ visitor_count[3] }}명{% endif %}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 주간 방문자 -->
+        <div class="col-xl-2 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body ml-2">
+              <div class="row no-gutters align-items-center" id="index_monthly_visitor">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-success text-uppercase mb-1">월간 방문자 (Month/1m)</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">{% if visitor_count %}{{ visitor_count[2] }}명{% endif %}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 월간 방문자 -->
+        <div class="col-xl-2 col-md-6 mb-4">
+          <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body ml-2">
+              <div class="row no-gutters align-items-center" id="index_yearly_visitor">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-info text-uppercase mb-1">연간 방문자 (Annual/1m)</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">{% if visitor_count %}{{ visitor_count[1] }}명{% endif %}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 연간 방문자 -->
+        <div class="col-xl-2 col-md-6 mb-4">
+          <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body ml-2">
+              <div class="row no-gutters align-items-center" id="index_total_visitor">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">총 방문자 (Total/1m)</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">{% if total_visitors %}{{ total_visitors }}명 {% else %} 0명 {% endif %}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Content Row -->
+
+      <div class="row">
+
+        <!-- Area Chart -->
+        <div class="col-xl-12 col-lg-7">
+          <!-- DataTales Example -->
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <div class="row">
+                <div class="col">
+                  <div class="custom-select col-xl-6" id="custom-select" style="overflow: hidden;">
+                    <label for="custom-select-box">
+                    <select name="custom-select-box" id="custom-select-box">
+                      <option value="10">10</option>
+                      <option value="25">25</option>
+                      <option value="50">50</option>
+                      <option value="100">100</option>
+                    </select> 개씩 보기
+                    </label>
+                  </div>
+                </div>
+                <!-- <div class="col border-left-secondary">
+                  <div class="input-group">
+                    <div class="custom-select" style="overflow: hidden;">
+                      <label for="card_select_box">
+                      <select name="card_select_box" id="card_select_box">
+                        {% for card in card_list %}
+                          {% if card.card_status != "불출" %}
+                          <option value="{{card.card_type}}">{{card.card_type}}</option>
+                          {% else %}
+                          {% endif %}
+                        {% endfor %}
+                      </select> 카드
+                      </label>
+                    </div>
+                    <button class="btn btn-secondary" type="submit" id="entrance_card">불출</button>
+                    <button class="btn btn-secondary ml-2" type="submit" id="recall_card">회수</button>
+                  </div>
+                </div> -->
+                <!-- 방문객 퇴실 -->
+                <!-- <div class="col border-left-secondary">
+                  <div class="input-group">
+                    <input type="text" class="form-control" id="manager_update_input" name="manager_update_input" placeholder="담당자명 입력" maxlength="8" style="height: 38px;">
+                    <button class="btn btn-secondary" type="button" id="manager_update">수정</button>
+                  </div>
+                </div> -->
+                <!-- <div class="col border-left-secondary">
+                  <div class="input-group">
+                    <span class="input-group-btn" style="width:100%;">
+                      <button type="button" class="btn btn-secondary" id="exit_checkbox" style="height: 38px; overflow: hidden; width:100%;">퇴실(선택 체크 후 버튼 클릭)</button>
+                    </span>
+                  </div>
+                </div> -->
+                <div class="col">
+                  <div class="input-group float-right col-xl-6">
+                    <input type="text" id="search-input" class="form-control" placeholder="Search..."/>
+                    <button class="btn btn-secondary" type="button">검색</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0" style="text-align: center;">
+                  <thead>
+                    <tr>
+                      <th scope="col">No</th>
+                      <th scope="col"><span class="text-success"><랙키></span> / <span class="text-primary"><카드></span> / 등록 구분 / 방문 목적 / 방문객 / 소속 / 번호 / 담당자 / 출입 시간 / 퇴실 시간 / <span class="text-danger"><퇴실></span></th>
+                    </tr>
+                  </thead>
+                  <tfoot>
+                    <tr>
+                      <th scope="col">No</th>
+                      <th scope="col"><span class="text-success"><랙키></span> / <span class="text-primary"><카드></span> / 등록 구분 / 방문 목적 / 방문객 / 소속 / 번호 / 담당자 / 출입 시간 / 퇴실 시간 / <span class="text-danger"><퇴실></span></th>
+                    </tr>
+                  </tfoot>
+                  <tbody id="table_tbody">
+                  {% for approve_visitor in approve_visitors %}
+                  <tr>
+                    <td style="vertical-align: middle; text-align: center;">{{ loop.index }}</td>
+                    <td>
+                      <!-- 아코디언 -->
+                      <div class="accordion" id="accordionExample{{approve_visitor.id}}">
+                        <div class="accordion-item">
+                          <h2 class="accordion-header" id="heading{{approve_visitor.id}}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{approve_visitor.id}}" aria-expanded="true" aria-controls="collapse{{approve_visitor.id}}">
+                              <ul class="list-group list-group-horizontal">
+                                {% if approve_visitor.rack_id != None %}
+                                <li class="list-group-item bg-success text-white">{{approve_visitor.rack.key_type}}{{approve_visitor.rack.key_num}}</li>
+                                {% endif %}
+                                {% if approve_visitor.card_id != None %}
+                                <li class="list-group-item bg-primary text-white">{{approve_visitor.card.card_type}}{{approve_visitor.card.card_num}}</li>
+                                {% endif %}
+
+                                <li class="list-group-item">{{approve_visitor.registry}}</li>
+                                <li class="list-group-item">{{approve_visitor.object}}</li>
+                                <li class="list-group-item">
+                                  {% if approve_visitor.name|length > 1 %}
+                                      {{ approve_visitor.name[0] + '*' + approve_visitor.name[2:] }}
+                                  {% else %}
+                                      {{ approve_visitor.name }}
+                                  {% endif %}
+                                </li>
+                                <li class="list-group-item">{{approve_visitor.department}}</li>
+                                <li class="list-group-item">
+                                  {% if approve_visitor.phone|length > 6 %}
+                                      {{ approve_visitor.phone[:3] + '****' + approve_visitor.phone[7:]}}
+                                  {% else %}
+                                      {{ approve_visitor.phone }}
+                                  {% endif %}
+                                </li>
+                                <li class="list-group-item">{{approve_visitor.manager}}</li>
+				{% if approve_visitor.entry_date != None %}
+                                  <li class="list-group-item">{{approve_visitor.entry_date}}</li>
+                                {% else %}
+                                {% endif %}
+                                {% if approve_visitor.exit_date != None %}
+                                  <li class="list-group-item">{{approve_visitor.exit_date}}</li>
+                                  <li class="list-group-item bg-danger text-white">퇴실</li>
+                                {% else %}
+                                  <li class="list-group-item  bg-white text-danger">퇴실 안함</li>
+                                {% endif %}
+                              </ul>
+                            </button>
+                          </h2>
+                          <div id="collapse{{approve_visitor.id}}" class="accordion-collapse collapse" aria-labelledby="heading{{approve_visitor.id}}" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                              <div class="row">
+                                <div class="col-xl-4">
+                                  <ul class="list-group list-group-vertical">
+                                    <li class="list-group-item"><b>PC 반입</b></li>
+                                    <li class="list-group-item">
+                                      {% if approve_visitor.personal_computer == 1 %}
+                                      O
+                                      {% else %}
+                                      X
+                                      {% endif %}
+                                    </li>
+                                    {% if approve_visitor.personal_computer == 1 %}
+                                    <li class="list-group-item"><b>모델명</b></li>
+                                    <li class="list-group-item">{{approve_visitor.model_name}}</li>
+                                    <li class="list-group-item"><b>시리얼 넘버</b></li>
+                                    <li class="list-group-item">{{approve_visitor.serial_number}}</li>
+                                    <li class="list-group-item"><b>반입 사유</b></li>
+                                    <li class="list-group-item">{{approve_visitor.pc_reason}}</li>
+                                    {% else %}
+                                    <li class="list-group-item"><b>모델명</b></li>
+                                    <li class="list-group-item"></li>
+                                    <li class="list-group-item"><b>시리얼 넘버</b></li>
+                                    <li class="list-group-item"></li>
+                                    <li class="list-group-item"><b>반입 사유</b></li>
+                                    <li class="list-group-item"></li>
+                                    {% endif %}
+                                  </ul>
+                                </div>
+                                <div class="col-xl-4">
+                                  <ul class="list-group list-group-vertical">
+                                    <li class="list-group-item"><b>작업</b></li>
+                                    <li class="list-group-item">
+                                      {% if approve_visitor.work == 1 %}
+                                      O
+                                      {% else %}
+                                      X
+                                      {% endif %}
+                                    </li>
+                                    {% if approve_visitor.work == 1 %}
+                                      <li class="list-group-item"><b>작업 분류 / 작업 위치</b></li>
+                                      <li class="list-group-item">{{approve_visitor.work_division}} / {{approve_visitor.location}}</li>
+                                      <li class="list-group-item"><b>요청 종류 / 요청 회사</b></li>
+                                      <li class="list-group-item">{{approve_visitor.company_type}} / {{approve_visitor.company}}</li>
+                                      <li class="list-group-item"><b>작업 내용</b></li>
+                                      <li class="list-group-item">{{approve_visitor.work_content}}</li>
+                                    {% else %}
+                                      <li class="list-group-item"><b>작업 분류 / 작업 위치</b></li>
+                                      <li class="list-group-item"></li>
+                                      <li class="list-group-item"><b>요청 종류 / 요청 회사</b></li>
+                                      <li class="list-group-item"></li>
+                                      <li class="list-group-item"><b>작업 내용</b></li>
+                                      <li class="list-group-item"></li>
+                                    {% endif %}
+                                  </ul>
+                                </div>
+                                <div class="col-xl-4">
+                                  <ul class="list-group list-group-vertical">
+                                    <li class="list-group-item"><b>장비 반출입</b></li>
+                                    <li class="list-group-item">
+                                      {% if approve_visitor.device == 1 %}
+                                      O
+                                      {% else %}
+                                      X
+                                      {% endif %}
+                                    </li>
+                                    {% if approve_visitor.device == 1 %}
+                                    <li class="list-group-item"><b>고객사</b></li>
+                                    <li class="list-group-item">{{approve_visitor.customer}}</li>
+                                    <li class="list-group-item"><b>장비 기종 / 장비 수량</b></li>
+                                    <li class="list-group-item">{{approve_visitor.device_division}} / {{approve_visitor.device_count}}</li>
+                                    <li class="list-group-item"><b>비고</b></li>
+                                    <li class="list-group-item">{{approve_visitor.remarks}}</li>
+                                    {% else %}
+                                    <li class="list-group-item"><b>고객사</b></li>
+                                    <li class="list-group-item"></li>
+                                    <li class="list-group-item"><b>장비 기종 / 장비 수량</b></li>
+                                    <li class="list-group-item"></li>
+                                    <li class="list-group-item"><b>비고</b></li>
+                                    <li class="list-group-item"></li>
+                                    {% endif %}
+                                  </ul>
+                                </div>
+                              </div>
+                              <div style="text-align: right;">
+                                {% if current_user.permission == '관리자' %}
+                                {% if approve_visitor.exit == 0 %}
+                                <div class="btn-group mt-4">
+                                  <button class="btn btn-secondary btn-sm" type="button" id="exit_btn{{approve_visitor.id}}" value="{{approve_visitor.id}}">퇴실</button>
+
+                                  <button class="btn btn-primary btn-sm ml-3" type="button" id="qrcode_btn{{approve_visitor.id}}" value="{{approve_visitor.id}}">QR 재전송</button>
+
+                                  <button class="btn_group btn btn-success btn-sm ml-3" type="button" id="update_btn{{approve_visitor.id}}" value="{{approve_visitor.id}}">수정</button>
+                                  <button class="btn_group btn btn-danger btn-sm ml-1" type="button" data-toggle="modal" data-target="#deleteModal">삭제</button>
+                                </div>
+                                {% endif %}
+                                {% endif %}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <!-- 아코디언 끝 -->
+                    </td>
+                  </tr>
+                <!-- 퇴실 스크립트 -->
+                    <!-- 퇴실 스크립트 -->
+                  <script>
+                    $('#exit_btn{{approve_visitor.id}}').click(function(){
+                      var exit_btn = $('#exit_btn{{approve_visitor.id}}').val();
+                      var postdata = {
+                        'exit_id': exit_btn,
+                        'exit': 1
+                      };
+                      $.ajax({
+                        contentType: 'application/json',
+                        type: 'POST',
+                        url: 'api/ajax_exit',
+                        data: JSON.stringify(postdata),
+                        dataType: 'json',
+                        success: function(response) {
+                          alert('퇴실 되었습니다.');
+                          history.go(0);
+                        },
+                        error: function(request, status, error) {
+                          message = request.responseText;
+                          if (message == "Card None")
+                            alert('카드를 먼저 불출해주세요.');
+                          if (message == "Exit Error")
+                            alert('퇴실 오류가 발생했습니다.');
+                        }
+                      })
+                    })
+                  </script>
+                  {% endfor %}
+                  </tbody>
+                </table>
+            </div>
+          </div>
+        </div>
+    </div>
+    <!-- /.container-fluid -->
+
+  </div>
+  <!-- End of Main Content --> 
+
+  </body>
+</html>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<!-- 체크박스 전체 선택/해제 스크립트 -->
+<script type="text/javascript">
+  $(document).ready(function() {
+    $("#index_total_check_box").click(function() {
+      if($("#index_total_check_box").is(":checked")) $("input[name=check_box]").prop("checked", true);
+      else $("input[name=check_box]").prop("checked", false);
+    });
+    
+    $("input[name=check_box]").click(function() {
+      var total = $("input[name=check_box]").length;
+      var checked = $("input[name=check_box]:checked").length;
+      
+      if(total != checked) $("#index_total_check_box").prop("checked", false);
+      else $("#index_total_check_box").prop("checked", true); 
+    });
+  });
+</script>
+
+<!-- 체크박스 퇴실 스크립트 -->
+<script>
+  $('#exit_checkbox').click(function(){
+    var checked_list = [];
+    $("input[name='check_box']:checked").each(function(){
+      checked_list.push($(this).val());
+    });
+    var postdata = {'checked_datas': checked_list}
+    $.ajax({
+      contentType: 'application/json',
+      type: 'POST',
+      url: 'api/ajax_index_exit_checkbox',
+      data: JSON.stringify(postdata),
+      dataType: 'json',
+      success: function(data) {
+        history.go(0);
+        alert('퇴실 되었습니다.');
+      },
+      error: function(request, status, error) {
+        message = request.responseText;
+        if (message == "No Select")
+          alert('퇴실할 방문객을 선택해주세요.')
+        if (message == "Exited")
+          alert('이미 퇴실한 방문객입니다.')
+        if (message == "No Card")
+          alert('카드를 먼저 불출해주세요.');
+      }
+    })
+  })
+</script>
+
+<!-- 체크박스 담당자 수정 스크립트 -->
+<script>
+  $('#manager_update').click(function(){
+    var manager = document.getElementById("manager_update_input");
+    var input_manager = manager.value
+    var checked_list = [];
+    $("input[name='check_box']:checked").each(function(){
+      checked_list.push($(this).val());
+    });
+    var postdata = {'checked_datas': checked_list, 'manager': input_manager}
+    $.ajax({
+      contentType: 'application/json',
+      type: 'POST',
+      url: 'api/ajax_index_manager_update_checkbox',
+      data: JSON.stringify(postdata),
+      dataType: 'json',
+      success: function(data) {
+        history.go(0);
+        alert('담당자가 수정 되었습니다.');
+      },
+      error: function(request, status, error) {
+        message = request.responseText;
+        if (message == "No Select")
+          alert('담당자를 수정할 방문객을 선택해주세요.')
+        if (message == "Exited")
+          alert('퇴실한 방문객은 담당자 수정이 불가합니다.')
+        if (message == "Error")
+          alert('담당자를 입력해주세요.')
+      }
+    })
+  })
+</script>
+
+<!-- 커스텀 셀렉트, 검색 기능 -->
+<script>
+  $(document).ready(function() {
+    // DataTable 초기화
+    var table = $('#dataTable').DataTable({
+      lengthMenu: [10, 15, 20],
+      pageLength: 10 // 기본 페이지 길이 설정
+    });
+    // 기존 페이지 길이 조정 기능 활성화
+    $('#dataTable_length select').on('change', function() {
+      var newLength = parseInt($(this).val(), 10);
+      table.page.len(newLength).draw();
+    });
+
+    // 셀릭트 이벤트 처리
+    $('#custom-select-box').on('change', function() {
+      var newLength = parseInt($(this).val(), 10);
+      table.page.len(newLength).draw();
+    });
+
+    var initialLength = table.page.len();
+    $('#custom-select-box').val(initialLength);
+
+    // 기존 datatable_length select 요소의 옵션 복사
+    var options = $('#dataTable_length select').html();
+    // 새로운 커스텀 select 요소에 옵션 추가
+    $('#custom-select-box').html(options);
+
+    // 검색 이벤트 처리
+    $('#search-input').on('keyup', function() {
+      table.search(this.value).draw();
+    });
+  });
+</script>
+
+<!-- 기존 셀렉트, 검색 폼 제거 -->
+<script>
+  $(document).ready(function() {
+    var search = document.querySelector('#dataTable_filter');
+    var select = document.querySelector('#dataTable_length')
+
+    search.style.display = 'none';
+    select.style.display = 'none';
+  });
+</script>
+
+<!-- 체크 박스 카드 불출 스크립트 -->
+<script>
+  $('#entrance_card').click(function(){
+    var checked_list = [];
+    var input_card = document.getElementById('card_select_box');
+    var card = input_card.value
+    $("input[name='check_box']:checked").each(function(){
+      checked_list.push($(this).val());
+    });
+    var postdata = {'checked_datas': checked_list, 'card': card}
+    $.ajax({
+      contentType: 'application/json',
+      type: 'POST',
+      url: 'api/ajax_index_card_checkbox',
+      data: JSON.stringify(postdata),
+      dataType: 'json',
+      success: function(data) {
+        alert('카드가 불출 되었습니다.');
+        history.go(0);
+      },
+      error: function(request, status, error) {
+        message = request.responseText;
+        if (message == "No Card")
+          alert('카드를 먼저 불출해주세요.');
+
+        if (message == "No Select")
+          alert('방문객을 선택해주세요.');
+
+        if (message == "Multi Check")
+          alert('카드 불출은 단일 선택만 가능합니다.');
+
+        if (message == "Exited")
+          alert('이미 퇴실한 방문객입니다.')
+
+        if (message == "Use Card")
+          alert('이미 카드를 불출했습니다.')
+      }
+    })
+  })
+</script>
+
+<!-- 체크 박스 카드 회수 스크립트 -->
+<script>
+  $('#recall_card').click(function(){
+    var checked_list = [];
+    $("input[name='check_box']:checked").each(function(){
+      checked_list.push($(this).val());
+    });
+    var postdata = {'checked_datas': checked_list}
+    $.ajax({
+      contentType: 'application/json',
+      type: 'POST',
+      url: 'api/ajax_update_visit_recall_card_checkbox',
+      data: JSON.stringify(postdata),
+      dataType: 'json',
+      success: function(data) {
+        alert('카드가 회수 되었습니다.');
+        history.go(0);
+      },
+      error: function(request, status, error) {
+        message = request.responseText;
+        if (message == "No Card")
+          alert('불출된 카드가 없습니다.');
+        if (message == "No Select")
+          alert('방문객을 선택해주세요.');
+        if (message == "Exited")
+          alert('이미 퇴실한 방문객입니다.');
+      }
+    })
+  })
+</script>
+
+<!-- 시간 새로고침 js -->
+<script>
+  function autoRefresh_stamptime_div()
+  {
+    var currentLocation = window.location;
+    $("#index_timestamp").load(currentLocation + ' #index_timestamp')
+  }
+  setInterval('autoRefresh_stamptime_div()', 1000); //1초 마다 새로고침
+
+  function autoRefresh_visitor_div()
+  {
+    var currentLocation = window.location;
+    $("#index_visitor").load(currentLocation + ' #index_visitor')
+  }
+  setInterval('autoRefresh_visitor_div()', 60000); //1분 마다 새로고침
+
+  function autoRefresh_daily_visitor_div()
+  {
+    var currentLocation = window.location;
+    $("#index_daily_visitor").load(currentLocation + ' #index_daily_visitor')
+  }
+  setInterval('autoRefresh_daily_visitor_div()', 60000); //1분 마다 새로고침
+
+  function autoRefresh_monthly_visitor_div()
+  {
+    var currentLocation = window.location;
+    $("#index_monthly_visitor").load(currentLocation + ' #index_monthly_visitor')
+  }
+  setInterval('autoRefresh_monthly_visitor_div()', 60000); //1분 마다 새로고침
+
+  function autoRefresh_yearly_visitor_div()
+  {
+    var currentLocation = window.location;
+    $("#index_yearly_visitor").load(currentLocation + ' #index_yearly_visitor')
+  }
+  setInterval('autoRefresh_yearly_visitor_div()', 60000); //1분 마다 새로고침
+
+  function autoRefresh_total_visitor_div()
+  {
+    var currentLocation = window.location;
+    $("#index_total_visitor").load(currentLocation + ' #index_total_visitor')
+  }
+  setInterval('autoRefresh_total_visitor_div()', 60000); //1분 마다 새로고침
+</script>
+{% endblock %}
+
+{% block js %}
+    {{ super() }}
+    <!-- Page level plugins -->
+    <script src="{{ url_for('static', filename='vendor/chart.js/Chart.min.js')}}"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="{{ url_for('static', filename='js/demo/chart-area-demo.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/demo/chart-pie-demo.js')}}"></script>
+
+    <!-- 테이블 데이터 처리 부트스트랩 Page level plugins -->
+    <script src="{{ url_for('static', filename='vendor/datatables/jquery.dataTables.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='vendor/datatables/dataTables.bootstrap4.min.js')}}"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="{{ url_for('static', filename='js/demo/datatables-demo.js')}}"></script>
+{% endblock %}

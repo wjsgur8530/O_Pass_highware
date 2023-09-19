@@ -1,0 +1,126 @@
+{% extends "base.html" %} {% block title %}Sample{% endblock %} 
+{% block content %}
+<div class="container-fluid">
+	<div class="content-body">
+		<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">등록 구분</th>
+      <th scope="col">이름</th>
+      <th scope="col">소속</th>
+      <th scope="col">담당자</th>
+      <th scope="col">등록 날짜</th>
+      <th scope="col">승인 날짜</th>
+      <th scope="col">출입 날짜</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+	    <td>{{visitor[0]}}</td>
+	    <td>{{visitor[1]}}</td>
+	    <td>{{visitor[2]}}</td>
+	    <td>{{visitor[3]}}</td>
+	    <td>{{visitor[4]}}</td>
+	    <td>{{visitor[5]}}</td>
+	    <td>{{visitor[21]}}</td>
+    </tr>
+  </tbody>
+		</table>
+		<div class="row mb-3">
+                <div class="col-xl-4">
+                  <ul class="list-group list-group-vertical">
+                    <li class="list-group-item"><b>PC 반입</b></li>
+                    <li class="list-group-item">
+                      {% if visitor[6] == 1 %}
+                      O
+                      {% else %}
+                      X
+                      {% endif %}
+                    </li>
+                    {% if visitor[6] == 1 %}
+                      <li class="list-group-item"><b>모델명</b></li>
+                      {% if visitor[7] %}
+                        <li class="list-group-item">{{visitor[7]}}</li>
+                      {% else %}
+                        <li class="list-group-item"></li>
+                      {% endif %}
+                      <li class="list-group-item"><b>시리얼 넘버</b></li>
+                      {% if visitor[8] %}
+                        <li class="list-group-item">{{visitor[8]}}</li>
+                      {% else %}
+                        <li class="list-group-item"></li>
+                      {% endif %}
+                      <li class="list-group-item"><b>반입 사유</b></li>
+                      {% if visitor[9] %}
+                        <li class="list-group-item">{{visitor[9]}}</li>
+                      {% else %}
+                        <li class="list-group-item"></li>
+                      {% endif %}
+                    {% else %}
+                      <li class="list-group-item"><b>모델명</b></li>
+                      <li class="list-group-item"></li>
+                      <li class="list-group-item"><b>시리얼 넘버</b></li>
+                      <li class="list-group-item"></li>
+                      <li class="list-group-item"><b>반입 사유</b></li>
+                      <li class="list-group-item"></li>
+                    {% endif %}
+                  </ul>
+                </div>
+                <div class="col-xl-4">
+                  <ul class="list-group list-group-vertical">
+                    <li class="list-group-item"><b>작업</b></li>
+                    <li class="list-group-item">
+                      {% if visitor[10] == 1 %}
+                      O
+                      {% else %}
+                      X
+                      {% endif %}
+                    </li>
+                    {% if visitor[10] == 1 %}
+                      <li class="list-group-item"><b>작업 분류 / 작업 위치</b></li>
+                      <li class="list-group-item"> {{visitor[11]}} / {{visitor[13]}} </li>
+                      <li class="list-group-item"><b>요청 종류 / 요청 회사</b></li>
+                      <li class="list-group-item"> {{visitor[14]}} / {{visitor[15]}} </li>
+                      <li class="list-group-item"><b>작업 내용</b></li>
+                      <li class="list-group-item"> {{visitor[12]}}</li>
+                    {% else %}
+                      <li class="list-group-item"><b>작업 분류 / 작업 위치</b></li>
+                      <li class="list-group-item"></li>
+                      <li class="list-group-item"><b>요청 종류 / 요청 회사</b></li>
+                      <li class="list-group-item"></li>
+                      <li class="list-group-item"><b>작업 내용</b></li>
+                      <li class="list-group-item"></li>
+                    {% endif %}
+                  </ul>
+                </div>
+                <div class="col-xl-4">
+                  <ul class="list-group list-group-vertical">
+                    <li class="list-group-item"><b>장비 반출입</b></li>
+                    <li class="list-group-item">
+                      {% if visitor[16] == 1 %}
+                      O
+                      {% else %}
+                      X
+                      {% endif %}
+                    </li>
+                    {% if visitor[16] == 1 %}
+                      <li class="list-group-item"><b>고객사</b></li>
+                      <li class="list-group-item"> {{visitor[17]}}</li>
+                      <li class="list-group-item"><b>장비 기종 / 장비 수량</b></li>
+                      <li class="list-group-item"> {{visitor[18]}} / {{visitor[19]}} </li>
+                      <li class="list-group-item"><b>비고</b></li>
+                      <li class="list-group-item"> {{visitor[20]}}</li>
+                    {% else %}
+                      <li class="list-group-item"><b>고객사</b></li>
+                      <li class="list-group-item"></li>
+                      <li class="list-group-item"><b>장비 기종 / 장비 수량</b></li>
+                      <li class="list-group-item"></li>
+                      <li class="list-group-item"><b>비고</b></li>
+                      <li class="list-group-item"></li>
+                    {% endif %}
+                  </ul>
+                </div>
+              </div>
+	</div>
+      </div>
+{% endblock %}

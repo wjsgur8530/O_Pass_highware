@@ -1,0 +1,155 @@
+{% extends "base.html" %} {% block title %}Sample{% endblock %} 
+{% block content %}
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+          <div class="row">
+
+          <div class="row">
+
+            <div class="col-lg-12">
+              <!-- DataTales Example -->
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">계정 로그</h6>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive" style="overflow: hidden;">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th>No</th>
+                          <th>이름</th>
+                          <th>이메일</th>
+                          <th>생성 시간</th>
+			  <th>IP 주소</th>
+                          <th>직급</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tfoot>
+                        <tr>
+                          <th>No</th>
+                          <th>이름</th>
+                          <th>이메일</th>
+                          <th>생성 시간</th>
+			  <th>IP 주소</th>
+                          <th>직급</th>
+                          <th></th>
+                        </tr>
+                      </tfoot>
+                      <tbody>
+                        {% for log in user %}
+                        <tr>
+                          <td>{{log.id}}</td>
+                          <td>
+                            {% if log.username|length > 1 %}
+                                {{ log.username[0] + '*' + log.username[2:] }}
+                            {% else %}
+                                {{ log.username }}
+                            {% endif %}
+                          </td>
+                          <td>{{log.email}}</td>
+                          <td>{{log.registered_at}}</td>
+			  <td>{{log.ip_address}}</td>
+                          <td>{{log.rank}}</td>
+                          <td style="width: 100px; text-align: center;">
+                            {% if log.username == '관리자' %}
+                            {% else %}
+                            <button class="btn btn-danger btn-sm" id="account_remove{{log.id}}" type="button" data-toggle="modal" data-target="#deleteModal{{log.id}}">삭제</button>
+                            {% endif %}
+                          </td>
+                        </tr>
+                        <div class="modal fade" id="deleteModal{{log.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Warning! Ready to Delete?</h5>
+                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">×</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">삭제하면 계정에 대한 데이터가 사라지고 복구할 수 없습니다. 정말 삭제하시려면 "삭제"를 선택하십시오.</div>
+                              <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button" data-dismiss="modal">취소</button>
+                                <button class="btn btn-danger" type="button" data-dismiss="modal" id="delete_btn{{log.id}}" value="{{log.id}}">삭제</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <script>
+                          $('#delete_btn{{log.id}}').click(function(){
+                            var delete_btn = $('#delete_btn{{log.id}}').val();
+                            var postdata = {
+                              'delete_btn': delete_btn,
+                            };
+                            $.ajax({
+                              contentType: 'application/json',
+                              type: 'POST',
+                              url: 'api/ajax_delete_account',
+                              data: JSON.stringify(postdata),
+                              dataType: 'json',
+                              success: function(response) {
+                                alert('삭제 되었습니다.');
+                                history.go(0);
+                              },
+                              error: function(request, status, error) {
+                                message = request.responseText;
+                                if (message == "No Data")
+                                  alert('계정 삭제에 실패했습니다.');
+                              }
+                            })
+                          })
+                        </script>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">계정 삭제 로그</h6>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive" style="overflow: hidden;">
+                    <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th>이메일</th>
+                          <th>삭제 시간</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for log in remove_user %}
+                        <tr>
+                          <td>{{log.account_email}}</td>
+                          <td>{{log.account_remove_at}}</td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+      </div>
+      <!-- End of Main Content -->
+<script>
+  $(document).ready(function() {
+      $('#dataTable2').DataTable(); // dataTable2에 dataTable 기능 부여
+  });
+</script>
+{% endblock %}
+
+{% block js %}
+    {{ super() }}
+    <!-- Page level plugins -->
+    <script src="{{ url_for('static', filename='vendor/datatables/jquery.dataTables.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='vendor/datatables/dataTables.bootstrap4.min.js')}}"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="{{ url_for('static', filename='js/demo/datatables-demo.js')}}"></script>
+{% endblock %}

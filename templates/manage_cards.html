@@ -1,0 +1,443 @@
+{% extends "base.html" %} {% block title %}Sample{% endblock %} 
+{% block content %}
+<html>
+<body>
+    <!-- Begin Page Content -->
+    <div class="container-fluid">
+      
+      <div class="row">
+
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body ml-2">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">총 출입 카드 수</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">{{ recall_cards | sum }} / {{ total_cards }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% set colors = ['success', 'info', 'warning', 'primary'] %}
+        {% for type, cards in card_counts.items() %}
+        {% set color_index = loop.index0 %}
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-{{ colors[color_index % colors|length] }} shadow h-100 py-2">
+            <div class="card-body ml-2">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-{{ colors[color_index % colors|length] }} text-uppercase mb-1">{{ type }} 출입 카드 수</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">
+                    {{ recall_cards[color_index] }} /
+                    {{ cards | length }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header">
+          <h6 class="m-0 font-weight-bold text-primary">출입 카드 생성 (Max 99)</h6>
+        </div>
+        <div class="card-body">
+          <!-- Page Heading -->
+          <div class="d-sm-flex align-items-center justify-content-between" id="popup">
+            <div class="input-group col-xl-10">
+              <input type="text" class="form-control col-xl-2" style="text-align: center; color: gray;" id="add_card_type_value" placeholder="etc. 일반, 공사, 전산">
+              <button class="btn btn-primary" id="add_card_type">종류 추가</button>
+              <select name="select_card_type" id="select_card_type" class="form-select ml-3">
+                {% for type, cards in card_counts.items() %}
+                <option value="{{type}}">{{type}}</option>
+                {% endfor %}
+              </select>
+              <input type="number" class="form-control col-xl-2" style="text-align: center; color: gray;" id="add_card_value" min="1" max="99" maxlength="2" value="1">
+              <button class="btn btn-primary" id="add_card">수량 추가</button>
+
+              <select name="select_card_type" id="select_card_type_2" class="form-select ml-3">
+                {% for type, cards in card_counts.items() %}
+                <option value="{{type}}">{{type}}</option>
+                {% endfor %}
+              </select>
+              <input type="number" class="form-control col-xl-2" style="text-align: center; color: gray;" id="add_card_value_2" min="1" max="99" maxlength="2" value="1">
+              <button class="btn btn-primary" id="add_card_2">선택 추가</button>
+
+              <select name="select_card_type" id="select_card_type_3" class="form-select ml-3">
+                {% for type, cards in card_counts.items() %}
+                  {% for card in cards %}
+                    {% if card.card_status == '회수' or card.card_status == '불출' %}
+                    <option value="{{card.card_type}} {{card.card_num}}">{{card.card_type}}{{card.card_num}}</option>
+                    {% endif %}
+                  {% endfor %}
+                {% endfor %}
+              </select>
+              <button class="btn btn-secondary" id="card_lose">분실</button>
+            </div>
+            <div id="btnWrap">
+              <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id="card_reset" data-toggle="modal" data-target="#resetModal"><i class="fas fa-plus fa-sm text-white-50"></i> 카드 초기화</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 카드 초기화 Modal-->
+      <div class="modal fade" id="resetModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Warning! Ready to Reset?</h5>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body">초기화하면 카드 데이터가 사라지고 복구할 수 없습니다. 정말 초기화 하시려면 "리셋"을 선택하십시오.</div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">취소</button>
+              <button class="btn btn-primary" type="button" data-dismiss="modal" id="card_reset_btn">리셋</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="accordion col-lg-4" id="accordionPanelsStayOpenExample">
+          {% for type, cards in card_counts.items() %}
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="panelsStayOpen-heading{{ loop.index }}_1">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse{{ loop.index }}_1" aria-expanded="true" aria-controls="panelsStayOpen-collapse{{ loop.index }}_1">
+                  {{ type }}
+                </button>
+              </h2>
+              <div id="panelsStayOpen-collapse{{ loop.index }}_1" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-heading{{ loop.index }}_1">
+                <div class="accordion-body">
+                  <ul class="list-group">
+                    {% for card in cards %}
+                      {% if card.card_status == '회수' %}
+                      <li class="list-group-item" style="line-height: 30px;">
+                        {{ type }} {{ card.card_num }}
+                        <button class="btn btn-secondary btn-sm float-right" id="delete_btn_{{card.id}}" value="{{card.id}}">X</button>
+                      </li>
+                      <script>
+                        $('#delete_btn_{{card.id}}').click(function(){
+                            var delete_id = $('#delete_btn_{{card.id}}').val();
+                            var postdata = {
+                                'delete_id': delete_id,
+                            }
+                            $.ajax({
+                                contentType: 'application/json',
+                                type: 'POST',
+                                url: 'api/ajax_card_delete',
+                                data: JSON.stringify(postdata),
+                                dataType: 'json',
+                                success: function(data) {
+                                    history.go(0)
+                                    alert('카드가 삭제되었습니다..');
+                                },
+                                error: function(request, status, error) {
+                                    alert('카드 삭제 실패');
+                                }
+                            })
+                        })
+                    </script>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        
+        
+        <div class="accordion col-lg-4" id="accordionPanelsStayOpenExample">
+          {% for type, cards in card_counts.items() %}
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="panelsStayOpen-heading{{ loop.index }}_2">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse{{ loop.index }}_2" aria-expanded="true" aria-controls="panelsStayOpen-collapse{{ loop.index }}_2">
+                  {{ type }}
+                </button>
+              </h2>
+              <div id="panelsStayOpen-collapse{{ loop.index }}_2" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-heading{{ loop.index }}_2">
+                <div class="accordion-body">
+                  <ul class="list-group">
+                    {% for card in cards %}
+                      {% if card.card_status == '불출' %}
+                      <li class="list-group-item" style="line-height: 30px;">
+                        {% for visitor in card.visitor %}
+                        {{ type }} {{ card.card_num }} - {{visitor.name}} ({{visitor.manager}}, {{visitor.approve_date}})
+                        {% endfor %}
+                        <button class="btn btn-secondary btn-sm float-right" id="delete_btn_{{card.id}}" value="{{card.id}}">X</button>
+                      </li>
+                      <script>
+                        $('#delete_btn_{{card.id}}').click(function(){
+                            var delete_id = $('#delete_btn_{{card.id}}').val();
+                            var postdata = {
+                                'delete_id': delete_id,
+                            }
+                            $.ajax({
+                                contentType: 'application/json',
+                                type: 'POST',
+                                url: 'api/ajax_card_delete',
+                                data: JSON.stringify(postdata),
+                                dataType: 'json',
+                                success: function(data) {
+                                    history.go(0)
+                                    alert('카드가 삭제되었습니다..');
+                                },
+                                error: function(request, status, error) {
+                                    alert('카드 삭제 실패');
+                                }
+                            })
+                        })
+                    </script>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        
+
+        <div class="accordion col-lg-4" id="accordionPanelsStayOpenExample">
+          {% for type, cards in card_counts.items() %}
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="panelsStayOpen-heading{{ loop.index }}_3">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse{{ loop.index }}_3" aria-expanded="true" aria-controls="panelsStayOpen-collapse{{ loop.index }}_3">
+                  {{ type }}
+                </button>
+              </h2>
+              <div id="panelsStayOpen-collapse{{ loop.index }}_3" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-heading{{ loop.index }}_3">
+                <div class="accordion-body">
+                  <ul class="list-group">
+                    {% for card in cards %}
+                      {% if card.card_status == '분실' %}
+                      <li class="list-group-item" style="line-height: 30px;">
+                        {{ type }} {{ card.card_num }}
+                        {% for visitor in card.visitor %}
+                        - {{visitor.name}} ({{visitor.department}}, {{visitor.approve_date}})
+                        {% endfor %}
+                        <button class="btn btn-secondary btn-sm float-right" id="delete_btn_{{card.id}}" value="{{card.id}}">X</button>
+                      </li>
+                      <script>
+                        $('#delete_btn_{{card.id}}').click(function(){
+                            var delete_id = $('#delete_btn_{{card.id}}').val();
+                            var postdata = {
+                                'delete_id': delete_id,
+                            }
+                            $.ajax({
+                                contentType: 'application/json',
+                                type: 'POST',
+                                url: 'api/ajax_card_delete',
+                                data: JSON.stringify(postdata),
+                                dataType: 'json',
+                                success: function(data) {
+                                    history.go(0)
+                                    alert('카드가 삭제되었습니다..');
+                                },
+                                error: function(request, status, error) {
+                                    alert('카드 삭제 실패');
+                                }
+                            })
+                        })
+                    </script>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        
+
+      </div>
+
+    </div>
+    <!-- /.container-fluid -->
+
+  </div>
+  <!-- End of Main Content -->
+</body>
+</html>
+
+<!-- 기본 카드 생성 -->
+<script>
+  $('#basic_card_create').click(function(){
+    const target = document.getElementById('basic_card_create');
+    target.disabled = true;
+    var postdata = {};
+    $.ajax({
+      contentType: 'application/json',
+      type: 'POST',
+      url: 'api/ajax_basic_card_create',
+      data: JSON.stringify(postdata),
+      dataType: 'json',
+      success: function(response) {
+        alert('카드가 추가되었습니다.');
+        history.go(0);
+      },
+      error: function(request, status, error) {
+        message = request.responseText;
+        if (message == "Card None")
+          alert('카드 추가 오류.');
+      }
+    })
+  })
+</script>
+
+<!-- 카드 종류 생성 -->
+<script>
+  $('#add_card_type').click(function(){
+    var card_type = document.getElementById('add_card_type_value');
+    var card_type_val = card_type.value;
+    var postdata = {'card_type_val': card_type_val};
+    $.ajax({
+      contentType: 'application/json',
+      type: 'POST',
+      url: 'api/ajax_card_type_create',
+      data: JSON.stringify(postdata),
+      dataType: 'json',
+      success: function(response) {
+        alert('카드 종류가 추가되었습니다.');
+        history.go(0);
+      },
+      error: function(request, status, error) {
+        message = request.responseText;
+        if (message == "type distinct")
+          alert('이미 존재하는 카드 타입입니다.');
+      }
+    })
+  })
+</script>
+
+<!-- 출입 카드 수량 생성 -->
+<script>
+  $('#add_card').click(function(){
+    var add_card_value = $('#add_card_value').val();
+    var select_card_type = $('#select_card_type').val();
+    var postdata = {
+      'add_card_value': add_card_value,
+      'select_card_type': select_card_type
+    };
+    $.ajax({
+      contentType: 'application/json',
+      type: 'POST',
+      url: 'api/ajax_add_card',
+      data: JSON.stringify(postdata),
+      dataType: 'json',
+      success: function(response) {
+        alert('카드가 추가되었습니다.');
+        history.go(0);
+      },
+      error: function(request, status, error) {
+        message = request.responseText;
+        if (message == "Card None")
+          alert('카드 추가 오류.');
+      }
+    })
+  })
+</script>
+
+<!-- 출입 카드 선택 생성 -->
+<script>
+  $('#add_card_2').click(function(){
+    var add_card_value = $('#add_card_value_2').val();
+    var select_card_type = $('#select_card_type_2').val();
+    var postdata = {
+      'add_card_value': add_card_value,
+      'select_card_type': select_card_type
+    };
+    $.ajax({
+      contentType: 'application/json',
+      type: 'POST',
+      url: 'api/ajax_add_card_select',
+      data: JSON.stringify(postdata),
+      dataType: 'json',
+      success: function(response) {
+        alert('카드가 추가되었습니다.');
+        history.go(0);
+      },
+      error: function(request, status, error) {
+        message = request.responseText;
+        if (message == "Use Card")
+          alert('이미 해당 카드가 존재합니다.');
+      }
+    })
+  })
+</script>
+
+<!-- 출입 카드 초기화 -->
+<script>
+  $('#card_reset_btn').click(function(){
+    var postdata = {};
+    $.ajax({
+      contentType: 'application/json',
+      type: 'POST',
+      url: 'api/ajax_card_reset',
+      data: JSON.stringify(postdata),
+      dataType: 'json',
+      success: function(response) {
+        alert('카드가 초기화 되었습니다.');
+        history.go(0);
+      },
+      error: function(request, status, error) {
+        message = request.responseText;
+        alert('카드 초기화 실패.')
+      }
+    })
+  })
+</script>
+
+
+<!-- 최댓값 제한 -->
+<script>
+  function validateInput() {
+      var inputElement = document.getElementById("add_card_value");
+      var inputValue = parseInt(inputElement.value);
+      var maxValue = 30;
+  
+      if (inputValue > maxValue || isNaN(inputValue)) {
+          inputElement.value = maxValue;
+      }
+  }
+  $('input[type=number][maxlength]').on('input', function(ev) {
+    var $this = $(this);
+    var maxlength = $this.attr('maxlength');
+    var value = $this.val();
+    if (value && value.length >= maxlength) {
+        $this.val(value.substr(0, maxlength));
+    }
+});
+</script>
+
+<!-- 카드 분실 스크립트 -->
+<script>
+  $('#card_lose').click(function(){
+    var input_card = document.getElementById('select_card_type_3');
+    var card = input_card.value
+    var postdata = {'card': card}
+    $.ajax({
+      contentType: 'application/json',
+      type: 'POST',
+      url: 'api/ajax_card_lose',
+      data: JSON.stringify(postdata),
+      dataType: 'json',
+      success: function(data) {
+        alert('카드가 분실 처리 되었습니다.');
+        history.go(0);
+      },
+      error: function(request, status, error) {
+        alert('카드 분실 오류')
+      }
+    })
+  })
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+{% endblock %}

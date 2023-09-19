@@ -1,0 +1,90 @@
+{% extends "base.html" %} {% block title %}Sample{% endblock %} 
+{% block content %}
+    <div class="container-fluid">
+        <div class="card o-hidden border-0 shadow-lg my-5">
+            <div class="card-body p-10">
+                <div style="margin: auto auto;">
+                    <h3 class="p-3 text-center"><b><img class="img-profile rounded-circle" src="static/img/CJ_logo.svg.png" style="width:70px; height: 70px;"> 송도 IDC 출입 관리 시스템 - [회원가입]</b></h3>
+                    <h4 class="p-3 text-center"><b><i class="fas fa-check fa-sm text-success"></i> CJ 송도 IDC에 방문하신 것을 진심으로 환영합니다.</b></h4>
+                    <h5 class="p-3"><b><i class="fas fa-fw fa-edit"></i> 개인정보 수집 및 이용동의 (필수)</b></h5>
+                    <div style="border: 1px solid #ced4da;">
+                        <div style="padding: 40px 40px;">
+                        <p>※ 개인정보 수집 이용동의 안내 </p>
+                        <p>1. 수집 및 이용 목적</p>
+                        <p>CJ올리브네트웍스(이하 ‘회사’라 칭함)는 CJ송도 IDC 출입에 관하여 필요한 개인정보등 필수 사항을 수집하고 있으며, 수집한 개인정보를 다음의 목적을 위해 활용합니다.</p>
+                        <p>- 수집목적 : 출입관리시스템 운영 및 관리</p><br>
+                        <p>2. 개인정보 수집 항목 및 방법</p>
+                        <p>회사는 CJ송도 IDC 출입 관리 시스템 회원가입에 대하여 아래와 같이 개인정보를 수집하고 있습니다.</p>
+                        <p>- 수집항목 : 이름, 소속, 직급, 이메일</p>
+                        <p>- 수집방법 : 출입등록 시스템을 통한 온라인 입력</p><br>
+                        <p>3. 보유 및 이용기간</p>
+                        <p>수집되는 개인정보에 대하여 CJ송도 IDC의 회원가입 된 이후 보존을 실시 합니다.</p>
+                        <p>단, 정보주체의 기록 삭제 요청시 즉시 삭제를 실시할 수 있으며 회원 탈퇴 시 개인정보가 즉시 파기됩니다.</p>
+                        <p>- 보유항목 : 이름, 소속, 직급, 이메일</p>
+                        <p>- 보유근거 : 정보주체의 동의</p>
+                        <p><b>- 보유기간 : 회원가입 이후 탈퇴 시까지</b></p><br>
+                        <p>4. 동의를 거부할 권리 및 동의 거부에 따른 불이익</p>
+                        <p>개인정보 수집 및 활용 동의(필수)에 대한 동의를 거부할 권리가 있으나, 미 동의 시 회원가입을 하실 수 없습니다.</p>
+                        </div>
+                    </div>
+                    <h6 class="mt-3 text-center">개인정보 수집ㆍ이용에 동의 합니다.</h6>
+                    <div class="mt-3 mb-4 text-center">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="secureRadio" id="secureRadio1" value="option1">
+                            <label class="form-check-label" for="secureRadio1">예</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="secureRadio" id="secureRadio2" value="option2">
+                            <label class="form-check-label" for="secureRadio2">아니요</label>
+                        </div>
+                    </div>
+                    <div class="text-right mt-5 mb-4">
+                        <form action="/register" method="GET" name="policy-form">
+                            <input type="text" value="Ssw8Ik0OWZM3vYSyqPQdgo1M7oPSE5EZLayiMPPlMFg" name="checkVal" style="display: none;">
+                            <button class="btn btn-primary btn-lg form-control" type="submit" id="nextButton">다음</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    $(document).ready(function() {
+        // 페이지 로드 시 "다음" 버튼을 숨김
+        $('#nextButton').hide();
+
+        // 예 체크박스 클릭 시 다음 버튼 표시
+        $('#secureRadio1').click(function() {
+            if ($(this).is(':checked')) {
+                $('#nextButton').show();
+            } else {
+                $('#nextButton').hide();
+            }
+        });
+    });
+</script>
+
+<script>
+    // 아니요 체크박스 클릭 시 다음 버튼 숨김
+    $('#secureRadio2').click(function() {
+        if ($(this).is(':checked')) {
+            $('#nextButton').hide();
+        } else {
+            $('#nextButton').show();
+        }
+    });
+</script>
+{% endblock %}
+{% block js %}
+<!-- Bootstrap core JavaScript-->
+<script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js')}}"></script>
+<script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+
+<!-- Core plugin JavaScript-->
+<script src="{{ url_for('static', filename='vendor/jquery-easing/jquery.easing.min.js')}}"></script>
+
+<!-- Custom scripts for all pages-->
+<script src="{{ url_for('static', filename='js/sb-admin-2.min.js')}}"></script>
+
+{% endblock %}

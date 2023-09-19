@@ -1,0 +1,226 @@
+{% extends "base.html" %} {% block title %}Sample{% endblock %} 
+{% block content %}
+{%with messages = get_flashed_messages()%}
+  {%if messages %}
+    <script type="text/javascript">
+      alert("{{messages[-1]}}");
+    </script>
+  {%endif%}
+{%endwith%}
+<body>
+    <!-- Begin Page Content -->
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Earnings (Monthly) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body ml-2">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">계열사 수</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">{{ department_counts[0] }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+    
+            <!-- Earnings (Annual) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body ml-2">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">협력사 수</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">{{ department_counts[1] }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+    
+            <!-- Earnings (Annual) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body ml-2">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Business Partner 수</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">{{ department_counts[2] }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+    
+            <!-- Pending Requests Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body ml-2">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">기타 수</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">{{ department_counts[3] }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+      <div class="card mb-4">
+        <div class="card-header">
+          <h6 class="m-0 font-weight-bold text-primary">부서 생성</h6>
+        </div>
+        <div class="card-body">
+          <!-- Page Heading -->
+          <div class="d-sm-flex align-items-center justify-content-between" id="popup">
+            <form method="POST">
+            <div class="input-group">
+              <select name="select_department_type" id="select_department_type" class="form-select">
+                <option value="계열사">계열사</option>
+                <option value="협력사">협력사</option>
+                <option value="BP">BP</option>
+                <option value="기타">기타</option>
+              </select>
+              <input type="text" class="form-control" style="text-align: center; color: gray;" id="add_department_name_value" name="add_department_name_value">
+              <button type="submit" class="btn btn-primary" id="add_department">추가</button>
+            </div>
+            </form>
+            <div id="btnWrap">
+                <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id="department_basic_create" data-toggle="modal" data-target="#createModal"><i class="fas fa-plus fa-sm text-white-50"></i> 기본 부서 생성</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 기본 부서 생성 Modal-->
+      <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Ready to Create?</h5>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body">기본 부서를 생성하겠습니까? <br> 정말 생성 하시려면 "생성"을 선택하십시오.</div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">취소</button>
+              <button class="btn btn-primary" type="button" data-dismiss="modal" id="department_create_btn">생성</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 부서 초기화 Modal-->
+      <div class="modal fade" id="resetModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Warning! Ready to Reset?</h5>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body">초기화하면 부서 데이터가 사라지고 복구할 수 없습니다. 정말 초기화 하시려면 "리셋"을 선택하십시오.</div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">취소</button>
+              <button class="btn btn-primary" type="button" data-dismiss="modal" id="department_reset_btn">리셋</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <div class="row">
+        {% for type in ['계열사', '협력사', 'BP', '기타'] %}
+            <div class="col-lg-3">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h6 class="m-0 font-weight-bold text-black">{{ type }}</h6>
+                    </div>
+                    <div class="card-body">
+                        {% for department in departments %}
+                            {% if department.department_type == type %}
+                                <ul class="list-group">
+                                    <li class="list-group-item" style="line-height: 30px;">
+                                        {{ department.department_name }}
+                                        <button class="btn btn-secondary btn-sm float-right" id="delete_btn_{{department.id}}" value="{{department.id}}">X</button>
+                                    </li>
+                                </ul>
+                                <script>
+                                    $('#delete_btn_{{department.id}}').click(function(){
+                                        var delete_id = $('#delete_btn_{{department.id}}').val();
+                                        var postdata = {
+                                            'delete_id': delete_id,
+                                        }
+                                        $.ajax({
+                                            contentType: 'application/json',
+                                            type: 'POST',
+                                            url: 'api/ajax_department_delete',
+                                            data: JSON.stringify(postdata),
+                                            dataType: 'json',
+                                            success: function(data) {
+                                                history.go(0)
+                                                alert('부서가 삭제되었습니다..');
+                                            },
+                                            error: function(request, status, error) {
+                                                alert('부서 삭제 실패');
+                                            }
+                                        })
+                                    })
+                                </script>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <!-- /.container-fluid -->
+  </div>
+  <!-- End of Main Content -->
+</body>
+<!-- 기본 부서 생성 -->
+<script>
+  $('#department_create_btn').click(function(){
+    var postdata = {};
+    $.ajax({
+      contentType: 'application/json',
+      type: 'POST',
+      url: 'api/ajax_department_basic_create',
+      data: JSON.stringify(postdata),
+      dataType: 'json',
+      success: function(response) {
+        alert('기본 부서가 생성 되었습니다.');
+        history.go(0);
+      },
+      error: function(request, status, error) {
+        alert('기본 부서 생성 실패.');
+      }
+    })
+  })
+</script>
+
+<!-- 부서 초기화 -->
+<script>
+  $('#department_reset_btn').click(function(){
+    var postdata = {};
+    $.ajax({
+      contentType: 'application/json',
+      type: 'POST',
+      url: 'api/ajax_department_reset',
+      data: JSON.stringify(postdata),
+      dataType: 'json',
+      success: function(response) {
+        alert('부서가 초기화 되었습니다.');
+        history.go(0);
+      },
+      error: function(request, status, error) {
+        alert('부서 초기화 실패.');
+      }
+    })
+  })
+</script>
+{% endblock %}

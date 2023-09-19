@@ -1,0 +1,1013 @@
+{% extends "base.html" %} {% block title %}Sample{% endblock %} 
+{% block content %}
+<html>
+    <head>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <style>
+            * {
+              padding:0;
+              margin:0;
+              box-sizing: border-box;
+            }
+            .btn_group {
+              font-size: 1rem;
+            }
+            #modalWrap, #modalWrapUpdate {
+              position: fixed; /* Stay in place */
+              z-index: 10; /* Sit on top */
+              padding-top: 50px; /* Location of the box */
+              left: 0;
+              top: 0;
+              width: 100%; /* Full width */
+              height: 100%; /* Full height */
+              overflow: auto; /* Enable scroll if needed */
+              background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            }
+        
+            #modalBody, #modalBodyUpdate {
+              width: 800px;
+              height: 720px;
+              padding: 30px 30px;
+              margin: 0 auto;
+              border: 1px solid #777;
+              background-color: #fff;
+            }
+        
+            #closeBtn, #closeBtnUpdate {
+              float:right;
+              font-weight: bold;
+              color: #777;
+              font-size:25px;
+              cursor: pointer;
+            }
+            .accordion-button:not(.collapsed) {
+              background-color: transparent;
+              border: none;
+              color: #343a40;
+            }
+          </style>
+    </head>
+    <body>
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+            <!-- 팝업 닫기 -->
+            <div id="modalWrap" style="display: none;">
+            <div id="modalContent">
+                <div id="modalBody">
+                    <!-- 팝업 닫기 -->
+                <span id="closeBtn">&times;</span> 
+                    <!-- 팝업 내용 -->
+                <h3 class="heading_title" style="text-align:center">내방객 등록하기</h3>
+                <form class="row g-3" method="post" action="/visit" enctype="multipart/form-data">
+                    <div class="col-md-6">
+                      <label for="inputName" class="form-label">이름</label>
+                      <input type="text" class="form-control" id="inputName" name="inputName">
+                    </div>
+                    <div class="col-6">
+                      <label for="inputPhoneNumber" class="form-label">연락처</label>
+                      <input type="text" class="form-control" id="inputPhoneNumber" placeholder="(-)를 빼고 입력해주세요." name="inputPhoneNumber">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="inputDepartment" class="form-label">소속</label>
+                        <select class="form-select" id="inputDepartment" name="inputDepartment">
+                          {% for department_list in department_lists %}
+                            <option value="{{department_list.department_name}}">{{department_list.department_name}}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-4">
+                      <label for="inputObject" class="form-label">방문 목적</label>
+                      <select class="form-select" id="inputObject" name="inputObject">
+                        <option value="업무 협의">업무 협의</option>
+                        <option value="업무 요청">업무 요청</option>
+                        <option value="단순 방문">단순 방문</option>
+                        <option value="장비 반입">장비 반입</option>
+                        <option value="기타">기타</option>
+                      </select>
+                    </div>
+                    <div class="col-4">
+                      <label for="inputManager" class="form-label">담당자</label>
+                      <input type="text" class="form-control" id="inputManager" placeholder="" name="inputManager">
+                    </div>
+                    <div class="col-12" style="display:flex;">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="gridCheck_3" value="1" name="inputPC" onchange="toggleInputs_pc()">
+                        <label class="form-check-label" for="gridCheck_3">
+                        PC 반입
+                        </label>
+                      </div>
+                      <div class="form-check ml-2">
+                        <input class="form-check-input" type="checkbox" id="gridCheck_2" value="1" name="inputWork" onchange="toggleInputs_work()">
+                        <label class="form-check-label" for="gridCheck_2">
+                        서버실 출입
+                        </label>
+                      </div>
+                      <div class="form-check ml-2">
+                        <input class="form-check-input" type="checkbox" id="gridCheck" value="1" name="inputDevice" onchange="toggleInputs()">
+                        <label class="form-check-label" for="gridCheck">
+                        장비 반출입
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col-3">
+                      <label for="inputModelName" class="form-label">모델명</label>
+                      <input type="text" class="form-control" id="inputModelName" placeholder="etc. 맥북" disabled="true" name="inputModelName">
+                    </div>
+                    <div class="col-3">
+                      <label for="inputSerialNumber" class="form-label">일련 번호</label>
+                      <input type="text" class="form-control" id="inputSerialNumber" placeholder="etc. XY0XX0" disabled="true" name="inputSerialNumber">
+                    </div>
+                    <div class="col-6">
+                      <label for="inputReason" class="form-label">PC 반입 사유</label>
+                      <input type="text" class="form-control" id="inputReason" placeholder="" disabled="true" name="inputReason">
+                    </div>
+                    <div class="col-3">
+                      <label for="inputWorkDivision" class="form-label">작업 구분</label>
+                      <select class="form-select" id="inputWorkDivision" name="inputWorkDivision" disabled="true">
+                        <option value="시스템 점검">시스템 점검</option>
+                        <option value="변경 작업">변경 작업</option>
+                        <option value="장애 처리">장애 처리</option>
+                        <option value="공사">공사</option>
+                        <option value="기타">기타</option>
+                      </select>
+                    </div>
+                    <div class="col-9">
+                      <label for="inputContent" class="form-label">작업 내용</label>
+                      <input type="text" class="form-control" id="inputContent" disabled="true" name="inputContent">
+                    </div>
+                    <div class="col-6">
+                      <label for="inputLocation" class="form-label">작업 위치</label>
+                      <input type="text" class="form-control" id="inputLocation" placeholder="etc. 4층 전산실" disabled="true" name="inputLocation">
+                    </div>
+                    <div class="col-6">
+                      <label for="inputCompany" class="form-label">작업 요청 회사</label>
+                      <div class="input-group">
+                      <select class="form-select col-xl-5" id="inputCompany" name="inputCompany" disabled="true">
+                        <option value="계열사">계열사</option>
+                        <option value="대외고객사">대외고객사</option>
+                      </select>
+                      <input type="text" class="form-control" id="inputCompanyName" disabled="true" name="inputCompanyName">
+                      </div>
+                    </div>
+                    <div class="col-md-3">
+                      <label for="inputCustomer" class="form-label">고객사</label>
+                      <input type="text" class="form-control" id="inputCustomer" disabled="true" name="inputCustomer" placeholder="etc. 고객사명">
+                    </div>
+                    <div class="col-md-4">
+                      <label for="inputDeviceDivision" class="form-label">장비 기종</label>
+                      <input type="text" class="form-control" id="inputDeviceDivision" disabled="true" name="inputDeviceDivision" placeholder="etc. 기종, 파트">
+                    </div>
+                    <div class="col-md-2">
+                      <label for="inputDeviceCount" class="form-label">수량</label>
+                      <input type="text" class="form-control" id="inputDeviceCount" disabled="true" name="inputDeviceCount" placeholder="etc. 1">
+                    </div>
+                    <div class="col-md-3">
+                      <label for="inputRemarks" class="form-label">비고</label>
+                      <input type="text" class="form-control" id="inputRemarks" disabled="true" name="inputRemarks">
+                    </div>
+                    <div class="col-12">
+                      <button type="submit" class="btn btn-primary">등록하기</button>
+                    </div>
+                  </form>
+                </div>
+            </div>
+            </div>
+
+            <!-- 팝업 닫기 -->
+            <div id="modalWrapUpdate" style="display: none;">
+              <div id="modalContentUpdate">
+                  <div id="modalBodyUpdate">
+                      <!-- 팝업 닫기 -->
+                  <span id="closeBtnUpdate">&times;</span> 
+                      <!-- 팝업 내용 -->
+                  <h3 style="text-align:center">내방객 수정하기</h3>
+                  <form class="row g-3" method="post" action="/visit_update" enctype="multipart/form-data">
+                      <div class="col-xl-1" style="display: none;"> 
+                        <label for="inputUpdateNumber" class="form-label">#</label>
+                        <input type="text" class="form-control" id="inputUpdateNumber" name="inputUpdateNumber">
+                      </div>
+                      <div class="col-md-6">
+                        <label for="inputUpdateName" class="form-label">이름</label>
+                        <input type="text" class="form-control" id="inputUpdateName" name="inputUpdateName">
+                      </div>
+                      <div class="col-6">
+                        <label for="inputUpdatePhoneNumber" class="form-label">연락처</label>
+                        <input type="text" class="form-control" id="inputUpdatePhoneNumber" placeholder="(-)를 빼고 입력해주세요." name="inputUpdatePhoneNumber">
+                      </div>
+                      <div class="col-md-4">
+                          <label for="inputUpdateDepartment" class="form-label">소속</label>
+                          <select class="form-select" id="inputUpdateDepartment" name="inputUpdateDepartment">
+                            {% for department_list in department_lists %}
+                              <option value="{{department_list.department_name}}">{{department_list.department_name}}</option>
+                            {% endfor %}
+                          </select>
+                      </div>
+                      <div class="col-md-4">
+                        <label for="inputUpdateObject" class="form-label">방문 목적</label>
+                        <select class="form-select" id="inputUpdateObject" name="inputUpdateObject">
+                          <option value="업무 협의">업무 협의</option>
+                          <option value="업무 요청">업무 요청</option>
+                          <option value="단순 방문">단순 방문</option>
+                          <option value="장비 반입">장비 반입</option>
+                          <option value="기타">기타</option>
+                        </select>
+                      </div>
+                      <div class="col-4">
+                        <label for="inputUpdateManager" class="form-label">담당자</label>
+                        <input type="text" class="form-control" id="inputUpdateManager" placeholder="" name="inputUpdateManager">
+                      </div>
+                      <div class="col-12" style="display:flex;">
+                        <div class="form-check">
+                          <input class="form-check-input" type="checkbox" id="gridCheck_6" value="1" name="inputUpdatePC" onchange="toggleUpdateInputs_pc()">
+                          <label class="form-check-label" for="gridCheck_6">
+                          PC 반입
+                          </label>
+                        </div>
+                        <div class="form-check ml-2">
+                          <input class="form-check-input" type="checkbox" id="gridCheck_5" value="1" name="inputUpdateWork" onchange="toggleUpdateInputs_work()">
+                          <label class="form-check-label" for="gridCheck_5">
+                          서버실 출입
+                          </label>
+                        </div>
+                        <div class="form-check ml-2">
+                          <input class="form-check-input" type="checkbox" id="gridCheck_4" value="1" name="inputUpdateDevice" onchange="toggleUpdateInputs()">
+                          <label class="form-check-label" for="gridCheck_4">
+                          장비 반출입
+                          </label>
+                        </div>
+                      </div>
+                      <div class="col-3">
+                        <label for="inputUpdateModelName" class="form-label">모델명</label>
+                        <input type="text" class="form-control" id="inputUpdateModelName" placeholder="etc. 맥북" disabled="true" name="inputUpdateModelName">
+                      </div>
+                      <div class="col-3">
+                        <label for="inputUpdateSerialNumber" class="form-label">일련 번호</label>
+                        <input type="text" class="form-control" id="inputUpdateSerialNumber" placeholder="etc. XY0XX0" disabled="true" name="inputUpdateSerialNumber">
+                      </div>
+                      <div class="col-6">
+                        <label for="inputUpdateReason" class="form-label">PC 반입 사유</label>
+                        <input type="text" class="form-control" id="inputUpdateReason" placeholder="" disabled="true" name="inputUpdateReason">
+                      </div>
+                      <div class="col-3">
+                        <label for="inputUpdateWorkDivision" class="form-label">작업 구분</label>
+                        <select class="form-select" id="inputUpdateWorkDivision" name="inputUpdateWorkDivision" disabled="true">
+                          <option value="시스템 점검">시스템 점검</option>
+                          <option value="변경 작업">변경 작업</option>
+                          <option value="장애 처리">장애 처리</option>
+                          <option value="공사">공사</option>
+                          <option value="기타">기타</option>
+                        </select>
+                      </div>
+                      <div class="col-9">
+                        <label for="inputUpdateContent" class="form-label">작업 내용</label>
+                        <input type="text" class="form-control" id="inputUpdateContent" disabled="true" name="inputUpdateContent">
+                      </div>
+                      <div class="col-6">
+                        <label for="inputUpdateLocation" class="form-label">작업 위치</label>
+                        <input type="text" class="form-control" id="inputUpdateLocation" placeholder="etc. 4층 전산실" disabled="true" name="inputUpdateLocation">
+                      </div>
+                      <div class="col-6">
+                        <label for="inputUpdateCompany" class="form-label">작업 요청 회사</label>
+                        <div class="input-group">
+                        <select class="form-select col-xl-5" id="inputUpdateCompany" name="inputUpdateCompany" disabled="true">
+                          <option value="계열사">계열사</option>
+                          <option value="대외고객사">대외고객사</option>
+                        </select>
+                        <input type="text" class="form-control" id="inputUpdateCompanyName" disabled="true" name="inputUpdateCompanyName">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <label for="inputUpdateCustomer" class="form-label">고객사</label>
+                        <input type="text" class="form-control" id="inputUpdateCustomer" disabled="true" name="inputUpdateCustomer" placeholder="etc. 고객사명">
+                      </div>
+                      <div class="col-md-4">
+                        <label for="inputUpdateDeviceDivision" class="form-label">장비 기종</label>
+                        <input type="text" class="form-control" id="inputUpdateDeviceDivision" disabled="true" name="inputUpdateDeviceDivision" placeholder="etc. 기종, 파트">
+                      </div>
+                      <div class="col-md-2">
+                        <label for="inputUpdateDeviceCount" class="form-label">수량</label>
+                        <input type="text" class="form-control" id="inputUpdateDeviceCount" disabled="true" name="inputUpdateDeviceCount" placeholder="etc. 1">
+                      </div>
+                      <div class="col-md-3">
+                        <label for="inputUpdateRemarks" class="form-label">비고</label>
+                        <input type="text" class="form-control" id="inputUpdateRemarks" disabled="true" name="inputUpdateRemarks">
+                      </div>
+                      <div class="col-12">
+                        <button type="submit" class="btn btn-success">수정하기</button>
+                      </div>
+                    </form>
+                  </div>
+              </div>
+              </div>
+
+          <!-- Page Heading -->
+          <div class="d-sm-flex align-items-center justify-content-end mb-4" id="popup">
+            <div id="btnWrap">
+              {% if current_user.permission == '관리자' %}
+              <button type="button" class="btn btn-success btn-sm" id="approve_checkbox"><i class="fas fa-check fa-sm text-white-50"></i> 승인(체크 선택 승인)</button>
+              <button type="button" class="btn btn-danger btn-sm" id="deny_checkbox"><i class="fas fa-ban fa-sm text-white-50"></i> 반려(체크 선택 반려)</button>
+              {% endif %}
+              <button class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" id="popupBtn"><i class="fas fa-plus fa-sm text-white-50"></i> 내방객 등록</button>
+            </div>
+          </div>
+        
+          <!-- Content Row -->
+
+          <div class="row">
+            
+            <!-- Area Chart -->
+            <div class="col-xl-12 col-lg-7">
+              <!-- DataTales Example -->
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <div class="row">
+                    <div class="col">
+                      <div class="custom-select col-xl-6" id="custom-select" style="overflow: hidden;">
+                        <label for="custom-select-box">
+                        <select name="custom-select-box" id="custom-select-box">
+                          <option value="10">10</option>
+                          <option value="25">25</option>
+                          <option value="50">50</option>
+                          <option value="100">100</option>
+                        </select> 개씩 보기
+                        </label>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <div class="input-group float-right col-xl-6">
+                        <input type="text" id="search-input" class="form-control" placeholder="Search..."/>
+                        <button class="btn btn-secondary" type="button">검색</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0" style="text-align: center;">
+                      <thead>
+                        <tr>
+                          <th scope="col" style="width:40px;">#</th>
+                          <th scope="col">등록 구분</th>
+                          <th scope="col">방문 목적</th>
+                          <th scope="col">이름</th>
+                          <th scope="col">소속</th>
+                          <th scope="col">연락처</th>
+                          <th scope="col">담당자</th>
+                          <th scope="col">등록 시각</th>
+                        </tr>
+                      </thead>
+                      <tfoot>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">등록 구분</th>
+                          <th scope="col">방문 목적</th>
+                          <th scope="col">이름</th>
+                          <th scope="col">소속</th>
+                          <th scope="col">연락처</th>
+                          <th scope="col">담당자</th>
+                          <th scope="col">등록 시각</th>
+                        </tr>
+                      </tfoot>
+                      <tbody>
+                        {% for visitor in visitor_info %}
+                          <tr class="table_content">
+                            <td>
+                              <div class="form-check" style="display: flex; justify-content: center; align-items: center;">
+                                <input type="checkbox" class="form-check-input" name="check_box" id="checkbox{{visitor.id}}" value="{{visitor.id}}">
+                              </div>
+                            </td>
+                            <td colspan="7">
+                              <!-- 아코디언 -->
+                                <div class="accordion" id="accordionExample{{visitor.id}}">
+                                  <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading{{visitor.id}}">
+                                      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{visitor.id}}" aria-expanded="true" aria-controls="collapse{{visitor.id}}">
+                                        {{visitor.id}}
+                                        {{visitor.registry}}
+                                        {{visitor.object}}
+                                        {% if visitor.name|length > 1 %}
+                                            {{ visitor.name[0] + '*' + visitor.name[2:] }}
+                                        {% else %}
+                                            {{ visitor.name }}
+                                        {% endif %}
+                                        {{visitor.department}}
+                                        {% if visitor.phone|length > 6 %}
+                                            {{ visitor.phone[:3] + '****' + visitor.phone[7:]}}
+                                        {% else %}
+                                            {{ visitor.phone }}
+                                        {% endif %}
+                                        {{visitor.manager}}
+                                        {{visitor.created_date}}
+                                      </button>
+                                    </h2>
+                                    <div id="collapse{{visitor.id}}" class="accordion-collapse collapse" aria-labelledby="heading{{visitor.id}}" data-bs-parent="#accordionExample">
+                                      <div class="accordion-body">
+                                        <div class="row">
+                                          <div class="col-xl-4">
+                                            <ul class="list-group list-group-vertical">
+                                              <li class="list-group-item"><b>PC 반입</b></li>
+                                              <li class="list-group-item">
+                                                {% if visitor.personal_computer == 1 %}
+                                                O
+                                                {% else %}
+                                                X
+                                                {% endif %}
+                                              </li>
+                                              <li class="list-group-item"><b>모델명</b></li>
+                                              <li class="list-group-item">{{visitor.model_name}}</li>
+                                              <li class="list-group-item"><b>시리얼 넘버</b></li>
+                                              <li class="list-group-item">{{visitor.serial_number}}</li>
+                                              <li class="list-group-item"><b>반입 사유</b></li>
+                                              <li class="list-group-item">{{visitor.pc_reason}}</li>
+                                            </ul>
+                                          </div>
+                                          <div class="col-xl-4">
+                                            <ul class="list-group list-group-vertical">
+                                              <li class="list-group-item"><b>작업</b></li>
+                                              <li class="list-group-item">
+                                                {% if visitor.work == 1 %}
+                                                O
+                                                {% else %}
+                                                X
+                                                {% endif %}
+                                              </li>
+                                              <li class="list-group-item"><b>작업 분류 / 작업 위치</b></li>
+                                              <li class="list-group-item">{{visitor.work_division}} / {{visitor.location}}</li>
+                                              <li class="list-group-item"><b>요청 종류 / 요청 회사</b></li>
+                                              <li class="list-group-item">{{visitor.company_type}} / {{visitor.company}}</li>
+                                              <li class="list-group-item"><b>작업 내용</b></li>
+                                              <li class="list-group-item">{{visitor.work_content}}</li>
+                                            </ul>
+                                          </div>
+                                          <div class="col-xl-4">
+                                            <ul class="list-group list-group-vertical">
+                                              <li class="list-group-item"><b>장비 반출입</b></li>
+                                              <li class="list-group-item">
+                                                {% if visitor.device == 1 %}
+                                                O
+                                                {% else %}
+                                                X
+                                                {% endif %}
+                                              </li>
+                                              <li class="list-group-item"><b>고객사</b></li>
+                                              <li class="list-group-item">{{visitor.customer}}</li>
+                                              <li class="list-group-item"><b>장비 기종 / 장비 수량</b></li>
+                                              <li class="list-group-item">{{visitor.device_division}} / {{visitor.device_count}}</li>
+                                              <li class="list-group-item"><b>비고</b></li>
+                                              <li class="list-group-item">{{visitor.remarks}}</li>
+                                            </ul>
+                                          </div>
+                                        </div>
+                                        <div style="text-align: right;">
+                                          {% if current_user.permission == '관리자' %}
+                                          <div class="btn-group mt-4">
+                                            <button class="btn_group btn btn-success mr-2 btn-sm" type="button" id="approve_btn{{visitor.id}}" value="{{visitor.id}}">승인</button>
+                                            <button class="btn_group btn btn-danger mr-4 btn-sm" type="button" id="deny_btn{{visitor.id}}" value="{{visitor.id}}">반려</button>
+                                            <button class="btn_group btn btn-success btn-sm" type="button" id="update_btn{{visitor.id}}" value="{{visitor.id}}">수정</button>
+                                          </div>
+                                          {% endif %}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <!-- 아코디언 끝 -->
+                            </td>
+                          </tr>
+                      <script>
+                        $('#approve_btn{{visitor.id}}').click(function(){
+                          var visitor_id = $('#approve_btn{{visitor.id}}').val();
+                          var postdata = {
+                            'visitor_id': visitor_id,
+                            'approve': 1
+                          };
+                          $.ajax({
+                            contentType: 'application/json',
+                            type: 'POST',
+                            url: 'api/ajax_approve',
+                            data: JSON.stringify(postdata),
+                            dataType: 'json',
+                            success: function(data) {
+                              history.go(0);
+                              alert('승인되었습니다.');
+                            },
+                            error: function(request, status, error) {
+                              alert('승인 오류');
+                            }
+                          })
+                        })
+                        </script>
+                        <script>
+                          $('#deny_btn{{visitor.id}}').click(function(){
+                            var visitor_id = $('#approve_btn{{visitor.id}}').val();
+                            var postdata = {
+                              'visitor_id': visitor_id,
+                              'approve': 1
+                            }
+                            $.ajax({
+                              contentType: 'application/json',
+                              type: 'POST',
+                              url: 'api/ajax_deny',
+                              data: JSON.stringify(postdata),
+                              dataType: 'json',
+                              success: function(data) {
+                                history.go(0);
+                                alert('반려되었습니다.');
+                              },
+                              error: function(request, status, error) {
+                                alert('반려 오류');
+                              }
+                            })
+                          })
+                          </script>
+                          <script>
+                            $('#emergency_btn{{visitor.id}}').click(function(){
+                              var visitor_id = $('#emergency_btn{{visitor.id}}').val();
+                              var postdata = {
+                                'visitor_id': visitor_id,
+                                'approve': 1
+                              };
+                              $.ajax({
+                                contentType: 'application/json',
+                                type: 'POST',
+                                url: 'api/ajax_emergency_approve',
+                                data: JSON.stringify(postdata),
+                                dataType: 'json',
+                                success: function(data) {
+                                  history.go(0);
+                                  alert('긴급 승인되었습니다.');
+                                },
+                                error: function(request, status, error) {
+                                  alert('긴급 승인 오류');
+                                }
+                              })
+                            })
+                            </script>
+                            <script>
+                              function handleSuccess(response) {
+                                var inputModelName = document.getElementById('inputUpdateModelName');
+                                var inputSerialNumber = document.getElementById('inputUpdateSerialNumber');
+                                var inputReason = document.getElementById('inputUpdateReason');
+                                
+                                var inputWorkDivision = document.getElementById('inputUpdateWorkDivision');
+                                var inputLocation = document.getElementById('inputUpdateLocation');
+                                var inputCompanyType = document.getElementById('inputUpdateCompany');
+                                var inputCompanyName = document.getElementById('inputUpdateCompanyName');
+                                var inputContent = document.getElementById('inputUpdateContent');
+
+                                var inputCustomer = document.getElementById('inputUpdateCustomer');
+                                var inputDeviceDivision = document.getElementById('inputUpdateDeviceDivision');
+                                var inputDeviceCount = document.getElementById('inputUpdateDeviceCount');
+                                var inputRemarks = document.getElementById('inputUpdateRemarks');
+
+                                var update_id = response.response[0];
+                                var name = response.response[1];
+                                var department = response.response[2];
+                                var object = response.response[3];
+                                var phone = response.response[4];
+                                var manager = response.response[5];
+                                var device = response.response[6];
+                                var remarks = response.response[7];
+                                var location = response.response[8];
+                                var work = response.response[9];
+                                var company_type = response.response[10];
+                                var company = response.response[11];
+                                var work_content = response.response[12];
+                                var personal_computer = response.response[13];
+                                var model_name = response.response[14];
+                                var serial_number = response.response[15];
+                                var pc_reason = response.response[16];
+                                var work_division = response.response[17];
+                                var customer = response.response[18];
+                                var device_division = response.response[19];
+                                var device_count = response.response[20];
+
+                                
+                                document.getElementById("inputUpdateNumber").value = update_id;
+                                document.getElementById("inputUpdateName").value = name;
+                                document.getElementById("inputUpdateDepartment").value = department;
+                                document.getElementById("inputUpdateObject").value = object;
+                                document.getElementById("inputUpdatePhoneNumber").value = phone;
+                                document.getElementById("inputUpdateManager").value = manager;
+                                
+                                if (personal_computer == true) {
+                                  document.getElementById('gridCheck_6').checked = true;
+                                  document.getElementById("inputUpdateModelName").value = model_name;
+                                  document.getElementById("inputUpdateSerialNumber").value = serial_number;
+                                  document.getElementById("inputUpdateReason").value = pc_reason;
+                                  inputModelName.disabled = false;
+                                  inputSerialNumber.disabled = false;
+                                  inputReason.disabled = false;
+                                } else {
+                                  document.getElementById('gridCheck_6').checked = false;
+                                  document.getElementById("inputUpdateModelName").value = null;
+                                  document.getElementById("inputUpdateSerialNumber").value = null;
+                                  document.getElementById("inputUpdateReason").value = null;
+                                  inputModelName.disabled = true;
+                                  inputSerialNumber.disabled = true;
+                                  inputReason.disabled = true;
+                                }
+
+                                if (work == true) {
+                                  document.getElementById('gridCheck_5').checked = true;
+                                  document.getElementById("inputUpdateLocation").value = location;
+                                  document.getElementById('inputUpdateCompany').value = company_type;
+                                  document.getElementById('inputUpdateCompanyName').value = company;
+                                  document.getElementById('inputUpdateContent').value = work_content;
+                                  inputWorkDivision.disabled = false;
+                                  inputLocation.disabled = false;
+                                  inputCompanyType.disabled = false;
+                                  inputCompanyName.disabled = false;
+                                  inputContent.disabled = false;
+                                } else {
+                                  document.getElementById('gridCheck_5').checked = false;
+                                  document.getElementById("inputUpdateLocation").value = null;
+                                  document.getElementById('inputUpdateCompany').value = null;
+                                  document.getElementById('inputUpdateCompanyName').value = null;
+                                  document.getElementById('inputUpdateContent').value = null;
+                                  inputWorkDivision.disabled = true;
+                                  inputLocation.disabled = true;
+                                  inputCompanyType.disabled = true;
+                                  inputCompanyName.disabled = true;
+                                  inputContent.disabled = true;
+                                }
+                                if (device == true) {
+                                  document.getElementById('gridCheck_4').checked = true;
+                                  document.getElementById("inputUpdateCustomer").value = customer;
+                                  document.getElementById("inputUpdateDeviceDivision").value = device_division;
+                                  document.getElementById("inputUpdateDeviceCount").value = device_count;
+                                  document.getElementById("inputUpdateRemarks").value = remarks;
+                                  inputCustomer.disabled = false;
+                                  inputDeviceDivision.disabled = false;
+                                  inputDeviceCount.disabled = false;
+                                  inputRemarks.disabled = false;
+                                } else {
+                                  document.getElementById('gridCheck_4').checked = false;
+                                  document.getElementById("inputUpdateCustomer").value = null;
+                                  document.getElementById("inputUpdateDeviceDivision").value = null;
+                                  document.getElementById("inputUpdateDeviceCount").value = null;
+                                  document.getElementById("inputUpdateRemarks").value = null;
+                                  inputCustomer.disabled = true;
+                                  inputDeviceDivision.disabled = true;
+                                  inputDeviceCount.disabled = true;
+                                  inputRemarks.disabled = true;
+                                }
+                              }
+                              $(document).ready(function() {
+                                $('#update_btn{{visitor.id}}').click(function() {
+                                    const modal = document.getElementById('modalWrapUpdate');
+                                    const closeBtn = document.getElementById('closeBtnUpdate');
+                                  
+                                    closeBtn.onclick = function() {
+                                        modal.style.display = 'none';
+                                    }
+                                  
+                                    window.onclick = function(event) {
+                                        if (event.target == modal) {
+                                            modal.style.display = 'none';
+                                        }
+                                    }
+                                    var update_btn = $('#update_btn{{visitor.id}}').val();
+                                    var postdata = {
+                                      'update_btn': update_btn,
+                                    };
+                                    $.ajax({
+                                      contentType: 'application/json',
+                                      type: 'POST',
+                                      url: 'api/ajax_update_manage_visit',
+                                      data: JSON.stringify(postdata),
+                                      dataType: 'json',
+                                      success: function(response) {
+                                        modal.style.display = 'block';
+                                        handleSuccess(response);
+                                      },
+                                      error: function(request, status, error) {
+                                        message = request.responseText;
+                                        if (message == "Use Card")
+                                          alert('방문객이 카드를 소지하고 있어 수정 기능이 제한됩니다.');
+                                      }
+                                    })
+                                });
+                            });
+                          </script>
+                      {% endfor %}
+                    </tbody>
+                    </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </body>
+  </html>
+  
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<!-- 팝업 창 스크립트 -->
+<script>
+    const btn = document.getElementById('popupBtn');
+    const modal = document.getElementById('modalWrap');
+    const closeBtn = document.getElementById('closeBtn');
+
+    btn.onclick = function() {
+    modal.style.display = 'block';
+    }
+    closeBtn.onclick = function() {
+    modal.style.display = 'none';
+    }
+
+    window.onclick = function(event) {
+    if (event.target == modalWrap) {
+        modal.style.display = "none";
+    }
+}
+</script>
+
+<!-- 인풋 창 disabled/abled -->
+<script>
+    function toggleInputs() {
+        var checkbox = document.getElementById('gridCheck');
+        var inputCustomer = document.getElementById('inputCustomer')
+        var inputDeviceDivision = document.getElementById('inputDeviceDivision')
+        var inputDeviceCount = document.getElementById('inputDeviceCount')
+        var inputRemarks = document.getElementById('inputRemarks');
+
+        if (checkbox.checked) {
+          inputCustomer.disabled = false;
+          inputDeviceDivision.disabled = false;
+          inputDeviceCount.disabled = false;
+          inputRemarks.disabled = false;
+        } else {
+          inputCustomer.disabled = true;
+          inputDeviceDivision.disabled = true;
+          inputDeviceCount.disabled = true;
+          inputRemarks.disabled = true;
+        }
+    }
+</script>
+
+<script>
+  function toggleUpdateInputs() {
+      var checkbox = document.getElementById('gridCheck_4');
+      var inputCustomer = document.getElementById('inputUpdateCustomer');
+      var inputDeviceDivision = document.getElementById('inputUpdateDeviceDivision');
+      var inputDeviceCount = document.getElementById('inputUpdateDeviceCount');
+      var inputRemarks = document.getElementById('inputUpdateRemarks');
+
+      if (checkbox.checked) {
+        inputCustomer.disabled = false;
+        inputDeviceDivision.disabled = false;
+        inputDeviceCount.disabled = false;
+        inputRemarks.disabled = false;
+      } else {
+        inputCustomer.disabled = true;
+        inputDeviceDivision.disabled = true;
+        inputDeviceCount.disabled = true;
+        inputRemarks.disabled = true;
+      }
+  }
+</script>
+
+<script>
+  function toggleInputs_work() {
+      var checkbox = document.getElementById('gridCheck_2');
+      var inputWorkDivision = document.getElementById('inputWorkDivision');
+      var inputContent = document.getElementById('inputContent');
+      var inputLocation = document.getElementById('inputLocation');
+      var inputCompany = document.getElementById('inputCompany');
+      var inputCompanyName = document.getElementById('inputCompanyName');
+
+      if (checkbox.checked) {
+        inputWorkDivision.disabled = false;
+        inputContent.disabled = false;
+        inputLocation.disabled = false;
+        inputCompany.disabled = false;
+        inputCompanyName.disabled = false;
+      } else {
+        inputWorkDivision.disabled = true;
+        inputContent.disabled = true;
+        inputLocation.disabled = true;
+        inputCompany.disabled = true;
+        inputCompanyName.disabled = true;
+      }
+  }
+</script>
+
+<script>
+  function toggleUpdateInputs_work() {
+      var checkbox = document.getElementById('gridCheck_5');
+      var inputWorkDivision = document.getElementById('inputUpdateWorkDivision');
+      var inputLocation = document.getElementById('inputUpdateLocation');
+      var inputCompany = document.getElementById('inputUpdateCompany');
+      var inputCompanyName = document.getElementById('inputUpdateCompanyName');
+      var inputContent = document.getElementById('inputUpdateContent');
+
+      if (checkbox.checked) {
+        inputWorkDivision.disabled = false;
+        inputLocation.disabled = false;
+        inputCompany.disabled = false;
+        inputCompanyName.disabled = false;
+        inputContent.disabled = false;
+      } else {
+        inputWorkDivision.disabled = true;
+        inputLocation.disabled = true;
+        inputCompany.disabled = true;
+        inputCompanyName.disabled = true;
+        inputContent.disabled = true;
+      }
+  }
+</script>
+
+<script>
+  function toggleUpdateInputs_pc() {
+      var checkbox = document.getElementById('gridCheck_6');
+      var inputModelName = document.getElementById('inputUpdateModelName');
+      var inputSerialNumber = document.getElementById('inputUpdateSerialNumber');
+      var inputReason = document.getElementById('inputUpdateReason');
+
+      if (checkbox.checked) {
+        inputModelName.disabled = false;
+        inputSerialNumber.disabled = false;
+        inputReason.disabled = false;
+      } else {
+        inputModelName.disabled = true;
+        inputSerialNumber.disabled = true;
+        inputReason.disabled = true;
+      }
+  }
+</script>
+
+<script>
+  function toggleInputs_pc() {
+      var checkbox = document.getElementById('gridCheck_3');
+      var inputModelName = document.getElementById('inputModelName');
+      var inputSerialNumber = document.getElementById('inputSerialNumber');
+      var inputReason = document.getElementById('inputReason');
+
+      if (checkbox.checked) {
+        inputModelName.disabled = false;
+        inputSerialNumber.disabled = false;
+        inputReason.disabled = false;
+      } else {
+        inputModelName.disabled = true;
+        inputSerialNumber.disabled = true;
+        inputReason.disabled = true;
+      }
+  }
+</script>
+
+<!-- 체크박스 전체 선택/해제 스크립트 -->
+<script type="text/javascript">
+  $(document).ready(function() {
+    $("#visit_total_check_box").click(function() {
+      if($("#visit_total_check_box").is(":checked")) $("input[name=check_box]").prop("checked", true);
+      else $("input[name=check_box]").prop("checked", false);
+    });
+    
+    $("input[name=check_box]").click(function() {
+      var total = $("input[name=check_box]").length;
+      var checked = $("input[name=check_box]:checked").length;
+      
+      if(total != checked) $("#visit_total_check_box").prop("checked", false);
+      else $("#visit_total_check_box").prop("checked", true); 
+    });
+  });
+</script>
+
+<!-- 체크박스 승인 스크립트 -->
+<script>
+  $('#approve_checkbox').click(function(){
+    var checked_list = [];
+    $("input[name='check_box']:checked").each(function(){
+      checked_list.push($(this).val());
+    });
+    var postdata = {'checked_datas': checked_list}
+    $.ajax({
+      contentType: 'application/json',
+      type: 'POST',
+      url: 'api/ajax_visit_approve_checkbox',
+      data: JSON.stringify(postdata),
+      dataType: 'json',
+      success: function(data) {
+        history.go(0);
+        alert('승인 되었습니다.');
+      },
+      error: function(request, status, error) {
+        message = request.responseText;
+        if (message == "No Select")
+          alert('승인할 방문객을 선택해주세요.')
+      }
+    })
+  })
+</script>
+
+<!-- 체크박스 반려 스크립트 -->
+<script>
+  $('#deny_checkbox').click(function(){
+    var checked_list = [];
+    $("input[name='check_box']:checked").each(function(){
+      checked_list.push($(this).val());
+    });
+    var postdata = {'checked_datas': checked_list}
+    $.ajax({
+      contentType: 'application/json',
+      type: 'POST',
+      url: 'api/ajax_visit_deny_checkbox',
+      data: JSON.stringify(postdata),
+      dataType: 'json',
+      success: function(data) {
+        history.go(0);
+        alert('반려 되었습니다.');
+      },
+      error: function(request, status, error) {
+        message = request.responseText;
+        if (message == "No Select")
+          alert('반려할 방문객을 선택해주세요.')
+      }
+    })
+  })
+</script>
+
+<!-- visit 체크박스 긴급 승인 스크립트 -->
+<script>
+  $('#emergency_approve_checkbox').click(function(){
+    var checked_list = [];
+    $("input[name='check_box']:checked").each(function(){
+      checked_list.push($(this).val());
+    });
+    var postdata = {'checked_datas': checked_list}
+    $.ajax({
+      contentType: 'application/json',
+      type: 'POST',
+      url: 'api/ajax_visit_emergency_approve_checkbox',
+      data: JSON.stringify(postdata),
+      dataType: 'json',
+      success: function(data) {
+        history.go(0);
+        alert('긴급 승인 되었습니다.');
+      },
+      error: function(request, status, error) {
+        message = request.responseText;
+        if (message == "No Select")
+          alert('긴급 승인할 방문객을 선택해주세요.')
+      }
+    })
+  })
+</script>
+
+<!-- 커스텀 셀렉트, 검색 기능 -->
+<script>
+  $(document).ready(function() {
+    // DataTable 초기화
+    var table = $('#dataTable').DataTable({
+      lengthMenu: [10, 15, 20],
+      pageLength: 10 // 기본 페이지 길이 설정
+    });
+    // 기존 페이지 길이 조정 기능 활성화
+    $('#dataTable_length select').on('change', function() {
+      var newLength = parseInt($(this).val(), 10);
+      table.page.len(newLength).draw();
+    });
+
+    // 셀릭트 이벤트 처리
+    $('#custom-select-box').on('change', function() {
+      var newLength = parseInt($(this).val(), 10);
+      table.page.len(newLength).draw();
+    });
+
+    var initialLength = table.page.len();
+    $('#custom-select-box').val(initialLength);
+
+    // 기존 datatable_length select 요소의 옵션 복사
+    var options = $('#dataTable_length select').html();
+    // 새로운 커스텀 select 요소에 옵션 추가
+    $('#custom-select-box').html(options);
+
+    // 검색 이벤트 처리
+    $('#search-input').on('keyup', function() {
+      table.search(this.value).draw();
+    });
+  });
+</script>
+
+<!-- 기존 셀렉트, 검색 폼 제거 -->
+<script>
+  $(document).ready(function() {
+    var search = document.querySelector('#dataTable_filter');
+    var select = document.querySelector('#dataTable_length')
+
+    search.style.display = 'none';
+    select.style.display = 'none';
+  });
+</script>
+
+{% endblock %}
+
+{% block js %}
+    {{ super() }}
+    <!-- 테이블 데이터 처리 부트스트랩 Page level plugins -->
+    <script src="{{ url_for('static', filename='vendor/datatables/jquery.dataTables.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='vendor/datatables/dataTables.bootstrap4.min.js')}}"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="{{ url_for('static', filename='js/demo/datatables-demo.js')}}"></script>
+{% endblock %}

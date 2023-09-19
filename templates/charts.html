@@ -1,0 +1,187 @@
+{% extends "base.html" %} {% block title %}Sample{% endblock %} 
+{% block content %}
+<html>
+  <body>
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+          <!-- Content Row -->
+          <div class="row">
+
+            <!-- 일간 방문자 -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body ml-2">
+                  <div class="row no-gutters align-items-center" id="index_daily_visitor">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">일간 방문자 (Daily)</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">{% if visitor_count[2] %}{{ visitor_count[2] }}명 {% else %} 0명 {% endif %}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 주간 방문자 -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body ml-2">
+                  <div class="row no-gutters align-items-center" id="index_monthly_visitor">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-success text-uppercase mb-1">월간 방문자 (Monthly)</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">{% if visitor_count[1] %}{{ visitor_count[1] }}명 {% else %} 0명 {% endif %}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 월간 방문자 -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body ml-2">
+                  <div class="row no-gutters align-items-center" id="index_yearly_visitor">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-info text-uppercase mb-1">연간 방문자 (Yearly)</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">{% if visitor_count[0] %}{{ visitor_count[0] }}명 {% else %} 0명 {% endif %}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 연간 방문자 -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body ml-2">
+                  <div class="row no-gutters align-items-center" id="index_total_visitor">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">총 방문자 (Total)</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">{% if total_visitors %}{{ total_visitors }}명{% endif %}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Content Row -->
+          <div class="row">
+
+            <div class="col-xl-6 col-lg-7"> <!-- xl-8 -->
+
+              <!-- Area Chart - static/js/demo/monthlyVisitorAreaChart.js-->
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">일간 방문자 (Daily)</h6>
+                </div>
+                <div class="card-body">
+                  <div class="chart-area">
+                    <canvas id="dailyVisitorAreaChart"></canvas>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Area Chart - static/js/demo/monthlyVisitorAreaChart.js-->
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-info">연간 방문자 (Yearly)</h6>
+                </div>
+                <div class="card-body">
+                  <div class="chart-area">
+                    <canvas id="yearlyVisitorAreaChart"></canvas>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bar Chart -->
+              <!-- <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">Bar Chart</h6>
+                </div>
+                <div class="card-body">
+                  <div class="chart-bar">
+                    <canvas id="myBarChart"></canvas>
+                  </div>
+                  <hr>
+                  Styling for the bar chart can be found in the <code>/js/demo/chart-bar-demo.js</code> file.
+                </div>
+              </div> -->
+
+            </div>
+
+            <!-- Donut Chart -->
+            <div class="col-xl-6 col-lg-5"> <!-- xl-4 -->
+              <!-- Area Chart - static/js/demo/monthlyVisitorAreaChart.js-->
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-success">월간 방문자 (Monthly)</h6>
+                </div>
+                <div class="card-body">
+                  <div class="chart-area">
+                    <canvas id="monthlyVisitorAreaChart"></canvas>
+                  </div>
+                </div>
+              </div>
+
+              <!-- <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">방문 목적</h6>
+                </div>
+                <div class="card-body">
+                  <div class="chart-pie pt-4">
+                    <canvas id="myPieChart"></canvas>
+                  </div>
+                  <hr>
+                  Styling for the donut chart can be found in the <code>/js/demo/chart-pie-demo.js</code> file.
+                </div>
+              </div> -->
+            </div>
+          </div>
+
+        </div>
+        <!-- /.container-fluid -->
+
+      </div>
+      <!-- End of Main Content -->
+    </body>
+</html>
+<script>
+  // Generate random daily visitors data (for demonstration)
+  function generateDailyData() {
+    var what_day = JSON.parse('{{daily[1]|tojson}}');
+    var what_month = JSON.parse('{{daily[0]|tojson}}');
+    var day_count = JSON.parse('{{daily[2]|tojson}}');
+
+    return [what_day, what_month, day_count];
+  }
+</script>
+<script>
+  // Generate random daily visitors data (for demonstration)
+  function generateMonthlyData() {
+    var what_month = JSON.parse('{{monthly[0]|tojson}}');
+    var monthly_count = JSON.parse('{{monthly[1]|tojson}}');
+    return [what_month, monthly_count];
+  }
+</script>
+<script>
+  // Generate random daily visitors data (for demonstration)
+  function generateYearlyData() {
+    var what_year = JSON.parse('{{yearly[0]|tojson}}');
+    var yearly_count = JSON.parse('{{yearly[1]|tojson}}');
+
+    return [what_year, yearly_count];
+  }
+</script>
+{% endblock %}
+
+{% block js %}
+    {{ super() }}
+    <!-- Page level plugins -->
+    <script src="{{ url_for('static', filename='vendor/chart.js/Chart.min.js')}}"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="{{ url_for('static', filename='js/demo/dailyVisitorAreaChart.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/demo/monthlyVisitorAreaChart.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/demo/yearlyVisitorAreaChart.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/demo/chart-pie-demo.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/demo/chart-bar-demo.js')}}"></script>
+{% endblock %}

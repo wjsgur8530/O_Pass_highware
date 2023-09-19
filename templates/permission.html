@@ -1,0 +1,176 @@
+{% extends "base.html" %} {% block title %}Sample{% endblock %} 
+{% block content %}
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+          <div class="row">
+
+          <div class="row">
+
+            <div class="col-lg-12">
+              <!-- DataTales Example -->
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">권한 로그</h6>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive" style="overflow: hidden;">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th>No</th>
+                          <th>이름</th>
+                          <th>이메일</th>
+                          <th>생성 시간</th>
+                          <th>직급</th>
+                          <th>현재 권한</th>
+                          <th>권한 변경</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tfoot>
+                        <tr>
+                          <th>No</th>
+                          <th>이름</th>
+                          <th>이메일</th>
+                          <th>생성 시간</th>
+                          <th>직급</th>
+                          <th>현재 권한</th>
+                          <th>권한 변경</th>
+                          <th></th>
+                        </tr>
+                      </tfoot>
+                      <tbody>
+                        {% for log in user %}
+                        <tr style="line-height: 40px;">
+                          <td>{{log.id}}</td>
+                          <td>
+                            {% if log.username|length > 1 %}
+                                {{ log.username[0] + '*' + log.username[2:] }}
+                            {% else %}
+                                {{ log.username }}
+                            {% endif %}
+                          </td>
+                          <td>{{log.email}}</td>
+                          <td>{{log.registered_at}}</td>
+                          <td>{{log.rank}}</td>
+                          <td>{{log.permission}}</td>
+                          <td>
+                            {% if log.username == '관리자' %}
+                            {% else %}
+                            <select class="form-control" aria-label="Default select example" id="permission{{log.id}}" name="permissionList" style="height:40px;">
+                              <option value="일반">일반</option>
+                              <option value="관리자">관리자</option>
+                              <option value="상황실">상황실</option>
+                            </select>
+                            {% endif %}
+                          </td>
+                          <td style="width: 100px; text-align: center;">
+                            {% if log.username == '관리자' %}
+                            {% else %}
+                            <button class="btn btn-primary btn-sm" type="button" data-toggle="modal" data-target="#permissionModal{{log.id}}">변경</button>
+                            {% endif %}
+                          </td>
+                        </tr>
+                        <div class="modal fade" id="permissionModal{{log.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">권한 부여를 하시겠습니까?</h5>
+                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">×</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">권한을 부여하면 계정에 대한 계정에 대한 권한이 변경됩니다. 정말 변경하시려면 "변경"를 선택하십시오.</div>
+                              <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button" data-dismiss="modal">취소</button>
+                                <button class="btn btn-primary" type="button" data-dismiss="modal" id="permission_btn{{log.id}}" value="{{log.id}}">변경</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <script>
+                          $('#permission_btn{{log.id}}').click(function(){
+                            var permission = $('#permission{{log.id}}').val();
+                            var user = $('#permission_btn{{log.id}}').val();
+                            var postdata = {
+                              'permission': permission,
+                              'user': user
+                            };
+                            $.ajax({
+                              contentType: 'application/json',
+                              type: 'POST',
+                              url: 'api/ajax_permission_change',
+                              data: JSON.stringify(postdata),
+                              dataType: 'json',
+                              success: function(response) {
+                                alert('변경 되었습니다.');
+                                history.go(0);
+                              },
+                              error: function(request, status, error) {
+                                message = request.responseText;
+                                if (message == "No Data")
+                                  alert('계정 삭제에 실패했습니다.');
+                                else if (message == "Same Data"){
+                                  alert('같은 권한을 부여할 수 없습니다.')
+                                }
+                              }
+                            })
+                          })
+                        </script>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">권한 변경 로그</h6>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive" style="overflow: hidden;">
+                    <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th>이메일</th>
+                          <th>변경 전 권한</th>
+                          <th>변경 후 권한</th>
+                          <th>변경 시간</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for log in permission %}
+                        <tr>
+                          <td>{{log.permission_email}}</td>
+                          <td>{{log.original_permission}}</td>
+                          <td>{{log.new_permission}}</td>
+                          <td>{{log.permission_change_at}}</td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+      </div>
+      <!-- End of Main Content -->
+<script>
+  $(document).ready(function() {
+      $('#dataTable2').DataTable(); // dataTable2에 dataTable 기능 부여
+  });
+</script>
+{% endblock %}
+
+{% block js %}
+    {{ super() }}
+    <!-- Page level plugins -->
+    <script src="{{ url_for('static', filename='vendor/datatables/jquery.dataTables.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='vendor/datatables/dataTables.bootstrap4.min.js')}}"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="{{ url_for('static', filename='js/demo/datatables-demo.js')}}"></script>
+{% endblock %}

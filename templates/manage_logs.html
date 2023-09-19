@@ -1,0 +1,74 @@
+{% extends "base.html" %} {% block title %}Sample{% endblock %} 
+{% block content %}
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+          <div class="row">
+
+          <div class="row">
+
+            <div class="col-lg-12">
+              <!-- DataTales Example -->
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">접속 이력</h6>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th>이름</th>
+                          <th>IP 주소</th>
+                          <th>로그인 시간</th>
+                          <th>로그아웃 시간</th>
+                        </tr>
+                      </thead>
+                      <tfoot>
+                        <tr>
+                          <th>이름</th>
+                          <th>IP 주소</th>
+                          <th>로그인 시간</th>
+                          <th>로그아웃 시간</th>
+                        </tr>
+                      </tfoot>
+                      <tbody>
+                        {% for log in user_log %}
+                        <tr>
+                          <td>{{log.user_log.username}}</td>
+                          <td>{{log.ip_address}}</td>
+                          <td>{{log.login_timestamp}}</td>
+                          {% if log.logout_timestamp == None %}
+                          <td></td>
+                          {% else %}
+                          <td>{{log.logout_timestamp}}</td>
+                          {% endif %}
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+
+      </div>
+      <!-- End of Main Content -->
+<!-- <script>
+  $(document).ready(function() {
+    $('#dataTable1').DataTable();
+  });
+</script> -->
+{% endblock %}
+
+{% block js %}
+    {{ super() }}
+    <!-- Page level plugins -->
+    <script src="{{ url_for('static', filename='vendor/datatables/jquery.dataTables.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='vendor/datatables/dataTables.bootstrap4.min.js')}}"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="{{ url_for('static', filename='js/demo/datatables-demo.js')}}"></script>
+{% endblock %}

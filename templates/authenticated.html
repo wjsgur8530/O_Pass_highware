@@ -1,0 +1,77 @@
+{% extends "base.html" %} {% block title %}Sample{% endblock %}
+{% block register %}
+<!DOCTYPE html>
+<html lang="en">
+{%with messages = get_flashed_messages()%}
+  {%if messages %}
+    <script type="text/javascript">
+      alert("{{messages[-1]}}");
+    </script>
+  {%endif%}
+{%endwith%}
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>SB Admin 2 - Register</title>
+
+  <!-- Custom fonts for this template-->
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+  <!-- Custom styles for this template-->
+  <link href="css/sb-admin-2.min.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-gradient-primary">
+  <div class="container">
+    <div class="card o-hidden border-0 shadow-lg my-5">
+      <div class="card-body p-10">
+          <form action="" method="POST">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col" colspan="3">개인정보를 수정하시려면 CJ O`Pass 비밀번호를 다시 한 번 입력해주시기 바랍니다.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row" colspan="2">로그인 이메일</th>
+                <td>{{ current_user.email }}</td>
+              </tr>
+              <tr>
+                <th scope="row" colspan="2" style="line-height: 35px;">현재 비밀번호</th>
+                <td><input type="password" class="form-control col-xl-6" name="current_pwd" id="current_pwd" placeholder="현재 비밀번호 입력"></td>
+              </tr>
+            </tbody>
+          </table>
+          <div style="text-align: right;">
+            <button class="btn btn-primary" type="submit" id="submitButton">입력</button>
+          </div>
+          </form>
+
+          <div class="text-center">
+            <a class="small" href="forgot-password" style="text-decoration: none;">비밀번호를 잊어버리셨습니까?</a>
+          </div>
+      </div>
+    </div>
+  </div>
+  <!-- Bootstrap core JavaScript-->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Core plugin JavaScript-->
+  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+  <!-- Custom scripts for all pages-->
+  <script src="js/sb-admin-2.min.js"></script>
+
+</body>
+
+</html>
+{% endblock %}

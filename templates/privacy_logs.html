@@ -1,0 +1,333 @@
+{% extends "base.html" %} {% block title %}Sample{% endblock %} 
+{% block content %}
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+          <div class="row">
+
+          <div class="row">
+
+            <div class="col-lg-6">
+              <!-- DataTales Example -->
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-plus fa-sm text-primary-50"></i> 내방객 등록 로그</h6>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive" style="overflow: hidden;">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th>No</th>
+                          <th>처리자No</th>
+                          <th>IP</th>
+                          <th>처리 시간</th>
+                          <th>처리 내용</th>
+                          <th>정보주체 식별 정보</th>
+                        </tr>
+                      </thead>
+                      <tfoot>
+                        <tr>
+                          <th>No</th>
+                          <th>처리자No</th>
+                          <th>IP</th>
+                          <th>처리 시간</th>
+                          <th>처리 내용</th>
+                          <th>정보주체 식별 정보</th>
+                        </tr>
+                      </tfoot>
+                      <tbody>
+                        {% for log in register_log %}
+                        <tr style="line-height: 40px;">
+                          <td>{{loop.index}}</td>
+                          <td>{{log.task_user_id}}</td>
+                          <td>{{log.ip_address}}</td>
+                          <td>{{log.task_at}}</td>
+                          <td>{{log.task_content}}</td>
+                          <td>
+                            {% if log.task_info|length >= 2 %}
+                                {{ log.task_info[:1] + '*' + log.task_info[3:]}}
+                            {% else %}
+                                {{ log.task_info }}
+                            {% endif %}
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-check fa-sm text-primary-50"></i> 내방객 승인 로그</h6>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive" style="overflow: hidden;">
+                    <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th>No</th>
+                          <th>처리자No</th>
+                          <th>IP</th>
+                          <th>처리 시간</th>
+                          <th>처리 내용</th>
+                          <th>정보주체 식별 정보</th>
+                        </tr>
+                      </thead>
+                      <tfoot>
+                        <th>No</th>
+                        <th>처리자No</th>
+                        <th>IP</th>
+                        <th>처리 시간</th>
+                        <th>처리 내용</th>
+                        <th>정보주체 식별 정보</th>
+                      </tfoot>
+                      <tbody>
+                        {% for log in approve_log %}
+                        <tr style="line-height: 40px;">
+                          <td>{{loop.index}}</td>
+                          <td>{{log.task_user_id}}</td>
+                          <td>{{log.ip_address}}</td>
+                          <td>{{log.task_at}}</td>
+                          <td>{{log.task_content}}</td>
+                          <td>
+                            {% if log.task_info|length >= 2 %}
+                                {{ log.task_info[:1] + '*' + log.task_info[3:]}}
+                            {% else %}
+                                {{ log.task_info }}
+                            {% endif %}
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+	      <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-secondary"><i class="fas fa-check fa-sm text-secondary-50"></i> 내방객 개인정보 조회 로그</h6>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive" style="overflow: hidden;">
+                    <table class="table table-bordered" id="dataTable5" width="100%" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th>No</th>
+                          <th>처리자No</th>
+                          <th>IP</th>
+                          <th>처리 시간</th>
+                          <th>처리 내용</th>
+                          <th>정보주체 식별 정보</th>
+                        </tr>
+                      </thead>
+                      <tfoot>
+                        <th>No</th>
+                        <th>처리자No</th>
+                        <th>IP</th>
+                        <th>처리 시간</th>
+                        <th>처리 내용</th>
+                        <th>정보주체 식별 정보</th>
+                      </tfoot>
+                      <tbody>
+                        {% for log in inquiry_log %}
+                        <tr style="line-height: 40px;">
+                          <td>{{loop.index}}</td>
+                          <td>{{log.task_user_id}}</td>
+                          <td>{{log.ip_address}}</td>
+                          <td>{{log.task_at}}</td>
+                          <td>{{log.task_content}}</td>
+                          <td>
+                            {% if log.task_info|length >= 2 %}
+                                {{ log.task_info[:1] + '*' + log.task_info[3:]}}
+                            {% else %}
+                                {{ log.task_info }}
+                            {% endif %}
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <!-- DataTales Example -->
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-success"><i class="fas fa-pencil-alt fa-sm text-primary-50"></i> 내방객 수정 로그</h6>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive" style="overflow: hidden;">
+                    <table class="table table-bordered" id="dataTable3" width="100%" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th>No</th>
+                          <th>처리자No</th>
+                          <th>IP</th>
+                          <th>처리 시간</th>
+                          <th>처리 내용</th>
+                          <th>정보주체 식별 정보</th>
+                        </tr>
+                      </thead>
+                      <tfoot>
+                        <tr>
+                          <th>No</th>
+                          <th>처리자No</th>
+                          <th>IP</th>
+                          <th>처리 시간</th>
+                          <th>처리 내용</th>
+                          <th>정보주체 식별 정보</th>
+                        </tr>
+                      </tfoot>
+                      <tbody>
+                        {% for log in change_log %}
+                        <tr style="line-height: 40px;">
+                          <td>{{loop.index}}</td>
+                          <td>{{log.task_user_id}}</td>
+                          <td>{{log.ip_address}}</td>
+                          <td>{{log.task_at}}</td>
+                          <td>{{log.task_content}}</td>
+                          <td>
+                            {% if log.task_info|length >= 2 %}
+                                {{ log.task_info[:1] + '*' + log.task_info[3:]}}
+                            {% else %}
+                                {{ log.task_info }}
+                            {% endif %}
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-danger"><i class="fas fa-ban fa-sm text-primary-50"></i> 내방객 반려 로그</h6>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive" style="overflow: hidden;">
+                    <table class="table table-bordered" id="dataTable4" width="100%" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th>No</th>
+                          <th>처리자No</th>
+                          <th>IP</th>
+                          <th>처리 시간</th>
+                          <th>처리 내용</th>
+                          <th>정보주체 식별 정보</th>
+                        </tr>
+                      </thead>
+                      <tfoot>
+                        <tr>
+                          <th>No</th>
+                          <th>처리자No</th>
+                          <th>IP</th>
+                          <th>처리 시간</th>
+                          <th>처리 내용</th>
+                          <th>정보주체 식별 정보</th>
+                        </tr>
+                      </tfoot>
+                      <tbody>
+                        {% for log in reject_log %}
+                        <tr style="line-height: 40px;">
+                          <td>{{loop.index}}</td>
+                          <td>{{log.task_user_id}}</td>
+                          <td>{{log.ip_address}}</td>
+                          <td>{{log.task_at}}</td>
+                          <td>{{log.task_content}}</td>
+                          <td>
+                            {% if log.task_info|length >= 2 %}
+                                {{ log.task_info[:1] + '*' + log.task_info[3:]}}
+                            {% else %}
+                                {{ log.task_info }}
+                            {% endif %}
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+<div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-danger"><i class="fas fa-ban fa-sm text-primary-50"></i> 내방객 삭제 로그</h6>
+                </div>
+                <div class="card-body">
+                  <div class="table-responsive" style="overflow: hidden;">
+                    <table class="table table-bordered" id="dataTable6" width="100%" cellspacing="0">
+                      <thead>
+                        <tr>
+                          <th>No</th>
+                          <th>처리자No</th>
+                          <th>IP</th>
+                          <th>처리 시간</th>
+                          <th>처리 내용</th>
+                          <th>정보주체 식별 정보</th>
+                        </tr>
+                      </thead>
+                      <tfoot>
+                        <tr>
+                          <th>No</th>
+                          <th>처리자No</th>
+                          <th>IP</th>
+                          <th>처리 시간</th>
+                          <th>처리 내용</th>
+                          <th>정보주체 식별 정보</th>
+                        </tr>
+                      </tfoot>
+                      <tbody>
+                        {% for log in delete_log %}
+                        <tr style="line-height: 40px;">
+                          <td>{{loop.index}}</td>
+                          <td>{{log.task_user_id}}</td>
+                          <td>{{log.ip_address}}</td>
+                          <td>{{log.task_at}}</td>
+                          <td>{{log.task_content}}</td>
+                          <td>
+                            {% if log.task_info|length >= 2 %}
+                                {{ log.task_info[:1] + '*' + log.task_info[3:]}}
+                            {% else %}
+                                {{ log.task_info }}
+                            {% endif %}
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+      </div>
+      <!-- End of Main Content -->
+<script>
+  $(document).ready(function() {
+      $('#dataTable2').DataTable(); // dataTable2에 dataTable 기능 부여
+      $('#dataTable3').DataTable();
+      $('#dataTable4').DataTable();
+      $('#dataTable5').DataTable();
+      $('#dataTable6').DataTable();
+  });
+</script>
+{% endblock %}
+
+{% block js %}
+    {{ super() }}
+    <!-- Page level plugins -->
+    <script src="{{ url_for('static', filename='vendor/datatables/jquery.dataTables.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='vendor/datatables/dataTables.bootstrap4.min.js')}}"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="{{ url_for('static', filename='js/demo/datatables-demo.js')}}"></script>
+{% endblock %}

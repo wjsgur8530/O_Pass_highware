@@ -1,0 +1,185 @@
+{% extends "base.html" %} {% block title %}Sample{% endblock %} 
+{% block content %}
+{%with messages = get_flashed_messages()%}
+  {%if messages %}
+    <script type="text/javascript">
+      alert("{{messages[-1]}}");
+    </script>
+  {%endif%}
+{%endwith%}
+<html>
+    <head></head>
+    <body>
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+          <section>
+              <div class="container py-5">
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="card mb-4">
+                      <div class="card-body text-center">
+                        <img src="{{ url_for('static', filename='img/CJ_logo.svg.png')}}" class="rounded-circle img-fluid" style="width: 150px; height: 150px; background: #fff;">
+                        <h5 class="my-3">{{current_user.username}}</h5>
+                        <p class="text-muted mb-4">{{current_user.department}}, {{current_user.rank}}</p>
+                        <div class="d-flex justify-content-center mb-2">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="card mb-4">
+                      <div class="card-body">
+                        <div class="row">
+                          <div class="col-sm-3">
+                            <p class="mb-0">이름</p>
+                          </div>
+                          <div class="col-sm-9">
+                            <p class="text-muted mb-0">{{current_user.username}}</p>
+                          </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                          <div class="col-sm-3">
+                            <p class="mb-0">이메일</p>
+                          </div>
+                          <div class="col-sm-9">
+                            <p class="text-muted mb-0">{{current_user.email}}</p>
+                          </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                          <div class="col-sm-3">
+                            <p class="mb-0">연락처</p>
+                          </div>
+                          <div class="col-sm-9">
+                            <p class="text-muted mb-0"></p>
+                          </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                          <div class="col-sm-3">
+                            <p class="mb-0">부서</p>
+                          </div>
+                          <div class="col-sm-9">
+                            <p class="text-muted mb-0">{{current_user.department}}</p>
+                          </div>
+                        </div>
+                        <hr>
+                        <div class="row">
+                          <div class="col-sm-3">
+                            <p class="mb-0">직급</p>
+                          </div>
+                          <div class="col-sm-9">
+                            <p class="text-muted mb-0">{{current_user.rank}}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <form action="" method="POST">
+                  <div class="col-lg-12 mt-4">
+                    <div class="card mb-4">
+                      <div class="card-body">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th scope="col" colspan="3">비밀번호를 변경하시려면 CJ O`Pass 비밀번호를 다시 한 번 입력해주시기 바랍니다.</th>
+                            </tr>
+                          </thead>
+                          <tbody style="line-height:35px;">
+                            <tr>
+                              <th scope="row" colspan="2">현재 비밀번호</th>
+                              <td><input type="password" class="form-control col-xl-6" name="current_pwd" id="current_pwd" placeholder="현재 비밀번호 입력"></td>
+                            </tr>
+                            <tr>
+                              <th scope="row" colspan="2">새 비밀번호</th>
+                              <td><input type="password" class="form-control col-xl-6" name="new_pwd_1" id="new_pwd_1" placeholder="새 비밀번호 입력"></td>
+                            </tr>
+                            <tr>
+                              <th scope="row" colspan="2">새 비밀번호 재입력</th>
+                              <td><input type="password" class="form-control col-xl-6" name="new_pwd_2" id="new_pwd_2" placeholder="새 비밀번호 재입력"></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <div style="text-align: right;">
+                          <button class="btn btn-primary">수정</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  </form>
+                </div>
+                  <div class="col-lg-12 mt-4">
+                    <div class="card mb-4">
+                      <div class="card-body">
+                        <table class="table">
+                          <thead>
+                            <tr>
+                              <th scope="col" colspan="3">회원 탈퇴(계정 탈퇴)</th>
+                            </tr>
+                          </thead>
+                          <tbody style="line-height:35px;">
+                            <tr>
+                              <th scope="row" colspan="3">- “회사”는 보유기간의 경과, 개인정보의 처리 목적 달성 등 그 개인정보가 불필요하게 되었을 때에는 “2. 수집하는 개인정보의 수집방법, 목적, 보유 및 이용기간”에 따라 해당(이름, 직급, 소속, 이메일, 비밀번호) 정보를 지체없이 파기합니다.</th>  
+                            </tr>
+                            <tr>
+                              <th scope="row" colspan="3">- 정보주체의 기록 삭제 요청시 즉시 삭제를 실시할 수 있으며 회원 탈퇴 시 개인정보가 즉시 파기됩니다.</th>  
+                            </tr>
+                            <tr>
+                              <th scope="row" colspan="3">- 개인정보 파기대상 정보는 이름, 직급, 소속, 이메일, 비밀번호이며 "회원 탈퇴"시 개인정보를 안전하게 파기합니다.</th>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <div style="text-align: right;">
+                          <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#deleteModal">회원 탈퇴</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            </section>
+        </div>
+        <!-- /.container-fluid -->
+
+      </div>
+      <!-- End of Main Content -->
+      <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">Warning! Ready to Delete?</h5>
+              <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">×</span>
+              </button>
+            </div>
+            <div class="modal-body">탈퇴하면 회원에 대한 데이터가 사라지고 복구할 수 없습니다. 정말 탈퇴하시려면 "탈퇴"를 선택하십시오.</div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" type="button" data-dismiss="modal">취소</button>
+              <button class="btn btn-danger" type="button" data-dismiss="modal" id="delete_btn" value="{{current_user.id}}">탈퇴</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+        $('#delete_btn').click(function(){
+          var postdata = {};
+          $.ajax({
+            contentType: 'application/json',
+            type: 'POST',
+            url: '/api/user_delete',
+            data: JSON.stringify(postdata),
+            dataType: 'json',
+            success: function(response) {
+              alert('회원 탈퇴 되었습니다.');
+              history.go(0);
+            },
+            error: function(request, status, error) {
+              alert('회원 탈퇴 에러');
+            }
+          })
+        })
+      </script>
+    </body>
+</html>
+{% endblock %}
